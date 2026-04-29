@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head><link rel="stylesheet" href="style.css">
+<style>body{padding:20px;} svg{border:1px solid #dee2e6; background:#fff;}</style>
+</head>
+<body>
+<h3>FBD Test — Joint A, no predictions</h3>
+<svg id="svg1" width="300" height="280"></svg>
+<h3>FBD Test — Joint A, AD=Compression predicted, AB=Tension predicted</h3>
+<svg id="svg2" width="300" height="280"></svg>
+<h3>FBD Test — Joint A, all solved (AD=-10, AB=8)</h3>
+<svg id="svg3" width="300" height="280"></svg>
+<h3>FBD Test — Joint D, load only (-12 kN)</h3>
+<svg id="svg4" width="300" height="280"></svg>
+<script type="module">
+import { renderFBD } from './fbd.js';
+const KING_POST = {
+  joints:[{id:'A',x:0,y:0},{id:'B',x:4,y:0},{id:'C',x:8,y:0},{id:'D',x:4,y:3}],
+  members:[{id:'AB',j1:'A',j2:'B'},{id:'BC',j1:'B',j2:'C'},{id:'BD',j1:'B',j2:'D'},{id:'AD',j1:'A',j2:'D'},{id:'CD',j1:'C',j2:'D'}],
+  loads:[{joint:'D',fx:0,fy:-12}],
+  reactions:[{joint:'A',fx:0,fy:6},{joint:'C',fx:0,fy:6}]
+};
+renderFBD('A', KING_POST, {}, {}, document.getElementById('svg1'));
+renderFBD('A', KING_POST, {}, {AD:'C', AB:'T'}, document.getElementById('svg2'));
+renderFBD('A', KING_POST, {AD:-10, AB:8}, {}, document.getElementById('svg3'));
+renderFBD('D', KING_POST, {}, {}, document.getElementById('svg4'));
+</script>
+</body></html>
