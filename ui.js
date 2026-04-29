@@ -186,7 +186,133 @@ function renderLedger() {
 }
 
 function activateJoint(jointId) {
-  // placeholder — implemented in Task 7
+  activeJoint   = jointId;
+  selectedMember = null;
+  feedbackEl.textContent = '';
+  feedbackEl.className = 'feedback';
+  btnHint.disabled  = false;
+  btnReset.disabled = false;
+  btnSolve.disabled = true;
+
+  if (!predictions[jointId]) predictions[jointId] = {};
+
+  panelTitle.textContent = `Free Body Diagram — Joint ${jointId}`;
+
+  renderFBD(jointId, problem, solvedForces, predictions[jointId], fbdSvg);
+  renderEquations(jointId);
+  renderSidePanel(jointId);
+  renderOverview();
+}
+
+function renderSidePanel(jointId) {
+  memberList.innerHTML = '';
+  const unknownMembers = problem.members.filter(
+    m => (m.j1 === jointId || m.j2 === jointId) && !(m.id in solvedForces)
+  );
+
+  if (unknownMembers.length === 0) {
+    memberList.innerHTML = '<li style="color:#6c757d;font-size:13px;">All members at this joint are solved.</li>';
+    btnSolve.disabled = true;
+    return;
+  }
+
+  unknownMembers.forEach(m => {
+    const pred = (predictions[jointId] || {})[m.id];
+    const li = document.createElement('li');
+    li.className = 'member-row';
+    li.dataset.memberId = m.id;
+
+    li.innerHTML = `
+      <span class="member-row-name">${m.id}</span>
+      <div class="member-row-buttons">
+        <button class="btn-predict${pred === 'T' ? ' active-T' : ''}"
+                data-pred="T" aria-label="${m.id} tension">T (+)</button>
+        <button class="btn-predict${pred === 'C' ? ' active-C' : ''}"
+                data-pred="C" aria-label="${m.id} compression">C (−)</button>
+      </div>
+      <span class="member-row-badge${pred ? ' ' + pred : ''}">
+        ${pred ? pred : '?'}
+      </span>`;
+
+    li.querySelectorAll('.btn-predict').forEach(btn => {
+      btn.addEventListener('click', () => setPrediction(jointId, m.id, btn.dataset.pred));
+    });
+
+    memberList.appendChild(li);
+  });
+
+  checkSolveReady(jointId);
+}
+
+function setPrediction(jointId, memberId, pred) {
+  if (!predictions[jointId]) predictions[jointId] = {};
+  predictions[jointId][memberId] = pred;
+  renderFBD(jointId, problem, solvedForces, predictions[jointId], fbdSvg);
+  renderSidePanel(jointId);
+}
+
+function checkSolveReady(jointId) {
+  const preds = predictions[jointId] || {};
+  const unknownMembers = problem.members.filter(
+    m => (m.j1 === jointId || m.j2 === jointId) && !(m.id in solvedForces)
+  );
+  btnSolve.disabled = !unknownMembers.every(m => preds[m.id]);
+}
+
+function renderEquations(jointId) {
+  const eqs = getEquationStrings(jointId, problem, solvedForces);
+  eqDisplay.textContent = `${eqs.fx}\n${eqs.fy}`;
+}
+
+btnReset.addEventListener('click', () => {
+  if (!activeJoint) return;
+  predictions[activeJoint] = {};
+  feedbackEl.textContent = '';
+  feedbackEl.className = 'feedback';
+  renderFBD(activeJoint, problem, solvedForces, {}, fbdSvg);
+  renderSidePanel(activeJoint);
+});
+
+btnHint.addEventListener('click', () => {
+  if (!activeJoint) return;
+  if (!hintLevels[activeJoint]) hintLevels[activeJoint] = 0;
+  hintLevels[activeJoint] = Math.min(hintLevels[activeJoint] + 1, 3);
+  showHint(activeJoint, hintLevels[activeJoint]);
+});
+
+function showHint(jointId, level) {
+  const unknowns = problem.members.filter(
+    m => (m.j1 === jointId || m.j2 === jointId) && !(m.id in solvedForces)
+  );
+
+  let msg = '';
+  if (level === 1) {
+    msg = 'Isolate the joint with the fewest unknowns — fewer unknowns means fewer variables in your equilibrium equations.';
+  } else if (level === 2) {
+    let xOnlyUnknown = null, yOnlyUnknown = null;
+    let xCount = 0, yCount = 0;
+    unknowns.forEach(m => {
+      const angle = getMemberAngle(m.id, jointId, problem);
+      if (Math.abs(Math.sin(angle)) > 1e-9) { yCount++; yOnlyUnknown = m.id; }
+      if (Math.abs(Math.cos(angle)) > 1e-9) { xCount++; xOnlyUnknown = m.id; }
+    });
+    if (yCount === 1) {
+      msg = `ΣFy has only one unknown here: F_${yOnlyUnknown}. Start there.`;
+    } else if (xCount === 1) {
+      msg = `ΣFx has only one unknown here: F_${xOnlyUnknown}. Start there.`;
+    } else {
+      msg = 'Both ΣFx and ΣFy have two unknowns — solve the system simultaneously.';
+    }
+  } else if (level === 3) {
+    const solved = solveJoint(jointId, problem, solvedForces);
+    const first = unknowns[0];
+    const f = solved[first.id];
+    const sign = Math.abs(f) < 0.001 ? 'Zero force' : f > 0 ? 'Tension' : 'Compression';
+    msg = `F_${first.id} = ${Math.round(f * 100) / 100} kN (${sign}).`;
+  }
+
+  feedbackEl.textContent = msg;
+  feedbackEl.className = 'feedback wrong';
 }
 
 boot();
