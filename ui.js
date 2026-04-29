@@ -332,7 +332,7 @@ btnSolve.addEventListener('click', () => {
     const f    = solved[m.id];
     const pred = preds[m.id];
     const isZero = Math.abs(f) < 0.001;
-    const correct = (!isZero && pred === 'T' && f > 0) || (!isZero && pred === 'C' && f < 0);
+    const correct = isZero || (!isZero && pred === 'T' && f > 0) || (!isZero && pred === 'C' && f < 0);
 
     const row = [...rows].find(r => r.dataset.memberId === m.id);
     if (correct) {
