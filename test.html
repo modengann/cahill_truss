@@ -2,7 +2,7 @@
 <html><body>
 <pre id="out"></pre>
 <script type="module">
-import { getMemberAngle, getSolvableJoints } from './truss.js';
+import { getMemberAngle, getSolvableJoints, solveJoint, getEquationStrings } from './truss.js';
 
 const KING_POST = {
   joints: [
@@ -43,6 +43,27 @@ results.push(`${solvable1.includes('B') && !solvable1.includes('D') ? 'PASS' : '
 
 // CD from D: D is at (4,3), C is at (8,0) → atan2(-3, 4) — tests Q4
 assert('CD from D → atan2(-3,4)', getMemberAngle('CD', 'D', KING_POST), Math.atan2(-3, 4));
+
+// solveJoint at A (king-post): AD and AB unknown, A_y=6 known
+const solA = solveJoint('A', KING_POST, {});
+// AD = -10 (compression), AB = 8 (tension)
+assert('solveJoint A: AD', solA['AD'], -10, 0.001);
+assert('solveJoint A: AB', solA['AB'],   8, 0.001);
+
+// solveJoint at C: CD and BC unknown, C_y=6 known
+const solC = solveJoint('C', KING_POST, {});
+assert('solveJoint C: CD', solC['CD'], -10, 0.001);
+assert('solveJoint C: BC', solC['BC'],   8, 0.001);
+
+// solveJoint at B: BD unknown (AB and BC already solved)
+const solB = solveJoint('B', KING_POST, { AB: 8, BC: 8, AD: -10, CD: -10 });
+assert('solveJoint B: BD', solB['BD'], 0, 0.001);
+
+const eqs = getEquationStrings('A', KING_POST, {});
+const fyOk = eqs.fy.includes('6') && eqs.fy.includes('F_AD');
+results.push(`${fyOk ? 'PASS' : 'FAIL'}: getEquationStrings A ΣFy mentions 6 and F_AD`);
+const fxOk = eqs.fx.includes('F_AB') && eqs.fx.includes('F_AD');
+results.push(`${fxOk ? 'PASS' : 'FAIL'}: getEquationStrings A ΣFx mentions F_AB and F_AD`);
 
 document.getElementById('out').textContent = results.join('\n');
 </script>
