@@ -315,4 +315,172 @@ function showHint(jointId, level) {
   feedbackEl.className = 'feedback wrong';
 }
 
+// ── Solve & Verify ─────────────────────────────────────────────
+btnSolve.addEventListener('click', () => {
+  if (!activeJoint) return;
+  const solved = solveJoint(activeJoint, problem, solvedForces);
+  const preds  = predictions[activeJoint] || {};
+
+  const unknowns = problem.members.filter(
+    m => (m.j1 === activeJoint || m.j2 === activeJoint) && !(m.id in solvedForces)
+  );
+
+  let allCorrect = true;
+  const rows = memberList.querySelectorAll('.member-row');
+
+  unknowns.forEach(m => {
+    const f    = solved[m.id];
+    const pred = preds[m.id];
+    const isZero = Math.abs(f) < 0.001;
+    const correct = (!isZero && pred === 'T' && f > 0) || (!isZero && pred === 'C' && f < 0);
+
+    const row = [...rows].find(r => r.dataset.memberId === m.id);
+    if (correct) {
+      row.classList.add('correct');
+    } else {
+      row.classList.add('wrong');
+      allCorrect = false;
+    }
+
+    const badge = row.querySelector('.member-row-badge');
+    if (isZero) {
+      badge.className = 'member-row-badge Z';
+      badge.textContent = '0 kN';
+    } else {
+      badge.className = `member-row-badge ${f > 0 ? 'T' : 'C'}`;
+      badge.textContent = `${f > 0 ? '+' : ''}${Math.round(f * 100) / 100} kN`;
+    }
+  });
+
+  if (allCorrect) {
+    Object.assign(solvedForces, solved);
+    solutionLog.push({ jointId: activeJoint, forces: { ...solved } });
+
+    renderFBD(activeJoint, problem, solvedForces, {}, fbdSvg);
+    renderLedger();
+    renderOverview();
+    renderEquations(activeJoint);
+
+    feedbackEl.className = 'feedback correct';
+    feedbackEl.textContent = `Joint ${activeJoint} solved. Values added to ledger.`;
+
+    if (problem.members.every(m => m.id in solvedForces)) {
+      setTimeout(showSummary, 600);
+    } else {
+      const nextBtn = document.createElement('button');
+      nextBtn.textContent = 'Next Joint →';
+      nextBtn.style.cssText = 'margin-top:8px;background:#28a745;color:white;border:none;border-radius:4px;padding:8px 16px;cursor:pointer;width:100%;';
+      nextBtn.addEventListener('click', () => {
+        activeJoint = null;
+        panelTitle.textContent = 'Select a joint to begin';
+        feedbackEl.textContent = '';
+        feedbackEl.className = 'feedback';
+        memberList.innerHTML = '';
+        btnSolve.disabled = true;
+        btnHint.disabled = true;
+        btnReset.disabled = true;
+        while (fbdSvg.firstChild) fbdSvg.removeChild(fbdSvg.firstChild);
+        eqDisplay.textContent = '';
+        renderOverview();
+        nextBtn.remove();
+      });
+      feedbackEl.after(nextBtn);
+    }
+  } else {
+    const wrongMembers = unknowns.filter(m => {
+      const f = solved[m.id];
+      const pred = preds[m.id];
+      const isZero = Math.abs(f) < 0.001;
+      return !(!isZero && ((pred === 'T' && f > 0) || (pred === 'C' && f < 0)));
+    });
+    feedbackEl.className = 'feedback wrong';
+    feedbackEl.textContent = buildDiagnostic(activeJoint, wrongMembers[0].id, solved);
+  }
+});
+
+function buildDiagnostic(jointId, memberId, solved) {
+  const f = solved[memberId];
+  const isZero = Math.abs(f) < 0.001;
+  if (isZero) {
+    return `${memberId} carries no force at this joint. Both equilibrium equations are satisfied without it contributing — it is a zero-force member.`;
+  }
+  if (f < 0) {
+    return `${memberId} = ${Math.round(f * 100) / 100} kN. The net known forces require a component in the opposite direction — ${memberId} must push the joint (compression).`;
+  }
+  return `${memberId} = +${Math.round(f * 100) / 100} kN. The net known forces require a component in the same direction — ${memberId} must pull the joint (tension).`;
+}
+
+// ── Summary ────────────────────────────────────────────────────
+function showSummary() {
+  const screen = document.getElementById('summary-screen');
+  screen.classList.remove('hidden');
+
+  renderOverview();
+  const sumSvg = document.getElementById('summary-svg');
+  sumSvg.innerHTML = overviewSvg.innerHTML;
+  sumSvg.setAttribute('viewBox', overviewSvg.getAttribute('viewBox'));
+
+  const table = document.getElementById('summary-table');
+  table.innerHTML = '<tr><th>Member</th><th>Force (kN)</th><th>Type</th></tr>';
+  problem.members.forEach(m => {
+    const f = solvedForces[m.id];
+    const isZero = Math.abs(f) < 0.001;
+    const type = isZero ? 'Zero' : f > 0 ? 'Tension' : 'Compression';
+    const color = isZero ? '#6c757d' : f > 0 ? '#185FA5' : '#A32D2D';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${m.id}</td><td style="font-family:monospace">${isZero ? '0' : (f > 0 ? '+' : '') + Math.round(f * 100) / 100}</td><td style="color:${color};font-weight:700">${type}</td>`;
+    table.appendChild(tr);
+  });
+
+  document.getElementById('btn-replay').onclick = startReplay;
+  document.getElementById('btn-try-another').onclick = () => {
+    screen.classList.add('hidden');
+    loadProblem(problem);
+  };
+}
+
+// ── Replay ─────────────────────────────────────────────────────
+let replayIndex = 0;
+
+function startReplay() {
+  document.getElementById('summary-screen').classList.add('hidden');
+  const replayScreen = document.getElementById('replay-screen');
+  replayScreen.classList.remove('hidden');
+  replayIndex = 0;
+  renderReplayStep();
+
+  document.getElementById('btn-replay-prev').onclick = () => {
+    if (replayIndex > 0) { replayIndex--; renderReplayStep(); }
+  };
+  document.getElementById('btn-replay-next').onclick = () => {
+    if (replayIndex < solutionLog.length - 1) { replayIndex++; renderReplayStep(); }
+  };
+  document.getElementById('btn-replay-close').onclick = () => {
+    replayScreen.classList.add('hidden');
+    document.getElementById('summary-screen').classList.remove('hidden');
+  };
+  document.getElementById('btn-replay-print').onclick = () => window.print();
+}
+
+function renderReplayStep() {
+  const { jointId } = solutionLog[replayIndex];
+
+  document.getElementById('replay-step-label').textContent =
+    `Step ${replayIndex + 1} of ${solutionLog.length}: Joint ${jointId}`;
+
+  const partial = {};
+  for (let i = 0; i <= replayIndex; i++) Object.assign(partial, solutionLog[i].forces);
+
+  const replaySvg = document.getElementById('replay-fbd-svg');
+  renderFBD(jointId, problem, partial, {}, replaySvg);
+
+  const prevPartial = {};
+  for (let i = 0; i < replayIndex; i++) Object.assign(prevPartial, solutionLog[i].forces);
+  const eqs = getEquationStrings(jointId, problem, prevPartial);
+  document.getElementById('replay-equations').textContent = `${eqs.fx}\n${eqs.fy}`;
+
+  document.getElementById('btn-replay-prev').disabled = replayIndex === 0;
+  document.getElementById('btn-replay-next').disabled = replayIndex === solutionLog.length - 1;
+}
+
 boot();
