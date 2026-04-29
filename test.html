@@ -39,7 +39,10 @@ results.push(`${!solvable0.includes('B') && !solvable0.includes('D') ? 'PASS' : 
 
 // After solving AD and AB, joint D has 2 unknowns: BD and CD → solvable
 const solvable1 = getSolvableJoints(KING_POST, { AD: -10, AB: 8, CD: -10, BC: 8 });
-results.push(`${solvable1.includes('B') || solvable1.includes('D') ? 'PASS' : 'FAIL'}: solvable1 includes B or D`);
+results.push(`${solvable1.includes('B') && !solvable1.includes('D') ? 'PASS' : 'FAIL'}: solvable1 includes B but not D`);
+
+// CD from D: D is at (4,3), C is at (8,0) → atan2(-3, 4) — tests Q4
+assert('CD from D → atan2(-3,4)', getMemberAngle('CD', 'D', KING_POST), Math.atan2(-3, 4));
 
 document.getElementById('out').textContent = results.join('\n');
 </script>
