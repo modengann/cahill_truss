@@ -1,0 +1,27 @@
+[
+  {
+    "id": "king-post",
+    "name": "King-Post Truss",
+    "joints": [
+      { "id": "A", "x": 0, "y": 0, "support": "pin" },
+      { "id": "B", "x": 4, "y": 0, "support": "free" },
+      { "id": "C", "x": 8, "y": 0, "support": "roller" },
+      { "id": "D", "x": 4, "y": 3, "support": "free" }
+    ],
+    "members": [
+      { "id": "AB", "j1": "A", "j2": "B" },
+      { "id": "BC", "j1": "B", "j2": "C" },
+      { "id": "BD", "j1": "B", "j2": "D" },
+      { "id": "AD", "j1": "A", "j2": "D" },
+      { "id": "CD", "j1": "C", "j2": "D" }
+    ],
+    "loads": [
+      { "joint": "D", "fx": 0, "fy": -12 }
+    ],
+    "reactions": [
+      { "joint": "A", "fx": 0, "fy": 6 },
+      { "joint": "C", "fx": 0, "fy": 6 }
+    ],
+    "solutionOrder": ["A", "C", "B", "D"]
+  }
+]
