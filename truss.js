@@ -21,20 +21,16 @@ export function getSolvableJoints(problem, solvedForces) {
 }
 
 export function solveJoint(jointId, problem, solvedForces) {
-  // Sum known force contributions to RHS
   let rhsX = 0, rhsY = 0;
 
-  // Add reactions at this joint
   (problem.reactions || []).forEach(r => {
     if (r.joint === jointId) { rhsX -= r.fx; rhsY -= r.fy; }
   });
 
-  // Add external loads at this joint
   (problem.loads || []).forEach(l => {
     if (l.joint === jointId) { rhsX -= l.fx; rhsY -= l.fy; }
   });
 
-  // Separate solved vs unsolved members connected to this joint
   const connectedMembers = problem.members.filter(
     m => m.j1 === jointId || m.j2 === jointId
   );
@@ -63,6 +59,8 @@ export function solveJoint(jointId, problem, solvedForces) {
   if (unknowns.length === 2) {
     const [u1, u2] = unknowns;
     const det = u1.cos * u2.sin - u2.cos * u1.sin;
+    if (Math.abs(det) < 1e-9)
+      throw new Error(`Joint ${jointId}: members are parallel — system is singular`);
     return {
       [u1.id]: (rhsX * u2.sin - rhsY * u2.cos) / det,
       [u2.id]: (u1.cos * rhsY - u1.sin * rhsX) / det,
@@ -88,21 +86,18 @@ export function getEquationStrings(jointId, problem, solvedForces) {
 
   let termsX = [], termsY = [];
 
-  // Reactions
   (problem.reactions || []).forEach(r => {
     if (r.joint !== jointId) return;
     if (r.fx !== 0) termsX.push(fmt(r.fx));
     if (r.fy !== 0) termsY.push(fmt(r.fy));
   });
 
-  // Loads
   (problem.loads || []).forEach(l => {
     if (l.joint !== jointId) return;
     if (l.fx !== 0) termsX.push(fmt(l.fx));
     if (l.fy !== 0) termsY.push(fmt(l.fy));
   });
 
-  // Members
   connectedMembers.forEach(m => {
     const angle = getMemberAngle(m.id, jointId, problem);
     const { cos, sin } = fmtAngle(Math.cos(angle), Math.sin(angle));

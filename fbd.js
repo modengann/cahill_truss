@@ -53,8 +53,13 @@ function drawArrow(svg, cx, cy, angle, length, color, markerId, dashed, label, a
   }
 }
 
+let _renderId = 0;
+
 export function renderFBD(jointId, problem, solvedForces, predictions, svgEl) {
   while (svgEl.firstChild) svgEl.removeChild(svgEl.firstChild);
+
+  const rid = ++_renderId;
+  const pfx = `fbd${rid}`;
 
   const W = svgEl.clientWidth  || +svgEl.getAttribute('width')  || 300;
   const H = svgEl.clientHeight || +svgEl.getAttribute('height') || 280;
@@ -72,17 +77,17 @@ export function renderFBD(jointId, problem, solvedForces, predictions, svgEl) {
     if (r.joint !== jointId) return;
     if (r.fx !== 0) {
       const angle = r.fx > 0 ? 0 : Math.PI;
-      const markerId = `arr-reaction-x-${jointId}`;
+      const markerId = `${pfx}-reaction-x-${jointId}`;
       svgEl.appendChild(makeArrowhead(markerId, COLORS.reaction));
       drawArrow(svgEl, cx, cy, angle, ARROW_BASE_LEN, COLORS.reaction, markerId, false,
-        `A_x = ${r.fx > 0 ? '+' : ''}${r.fx} kN`, `Reaction: ${r.fx} kN horizontal`);
+        `${jointId}_x = ${r.fx > 0 ? '+' : ''}${r.fx} kN`, `Reaction: ${r.fx} kN horizontal`);
     }
     if (r.fy !== 0) {
       const angle = r.fy > 0 ? -Math.PI / 2 : Math.PI / 2;
-      const markerId = `arr-reaction-y-${jointId}`;
+      const markerId = `${pfx}-reaction-y-${jointId}`;
       svgEl.appendChild(makeArrowhead(markerId, COLORS.reaction));
       drawArrow(svgEl, cx, cy, angle, ARROW_BASE_LEN, COLORS.reaction, markerId, false,
-        `A_y = ${r.fy > 0 ? '+' : ''}${r.fy} kN`, `Reaction: ${r.fy} kN vertical`);
+        `${jointId}_y = ${r.fy > 0 ? '+' : ''}${r.fy} kN`, `Reaction: ${r.fy} kN vertical`);
     }
   });
 
@@ -90,14 +95,14 @@ export function renderFBD(jointId, problem, solvedForces, predictions, svgEl) {
     if (l.joint !== jointId) return;
     if (l.fy !== 0) {
       const angle = l.fy > 0 ? -Math.PI / 2 : Math.PI / 2;
-      const markerId = `arr-load-y-${jointId}`;
+      const markerId = `${pfx}-load-y-${jointId}`;
       svgEl.appendChild(makeArrowhead(markerId, COLORS.load));
       drawArrow(svgEl, cx, cy, angle, ARROW_BASE_LEN, COLORS.load, markerId, false,
         `${l.fy} kN`, `Load: ${l.fy} kN vertical`);
     }
     if (l.fx !== 0) {
       const angle = l.fx > 0 ? 0 : Math.PI;
-      const markerId = `arr-load-x-${jointId}`;
+      const markerId = `${pfx}-load-x-${jointId}`;
       svgEl.appendChild(makeArrowhead(markerId, COLORS.load));
       drawArrow(svgEl, cx, cy, angle, ARROW_BASE_LEN, COLORS.load, markerId, false,
         `${l.fx} kN`, `Load: ${l.fx} kN horizontal`);
@@ -108,13 +113,15 @@ export function renderFBD(jointId, problem, solvedForces, predictions, svgEl) {
     m => m.j1 === jointId || m.j2 === jointId
   );
 
+  const from = problem.joints.find(j => j.id === jointId);
+
   connectedMembers.forEach(m => {
     const otherId = m.j1 === jointId ? m.j2 : m.j1;
-    const from = problem.joints.find(j => j.id === jointId);
-    const to   = problem.joints.find(j => j.id === otherId);
+    const to = problem.joints.find(j => j.id === otherId);
+    if (!from || !to) throw new Error(`renderFBD: joint not found (${jointId} or ${otherId})`);
     const outwardAngle = Math.atan2(-(to.y - from.y), to.x - from.x);
 
-    const markerId = `arr-${m.id}-${jointId}`;
+    const markerId = `${pfx}-${m.id}-${jointId}`;
 
     if (m.id in solvedForces) {
       const f = solvedForces[m.id];
