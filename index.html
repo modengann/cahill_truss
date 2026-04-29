@@ -46,17 +46,19 @@
     <ul id="ledger-list" class="ledger-list"></ul>
   </section>
 
-  <div id="summary-screen" class="summary-screen hidden" role="dialog" aria-label="Problem complete">
-    <h2>All members solved!</h2>
-    <svg id="summary-svg" width="100%" height="200"></svg>
-    <table id="summary-table"></table>
-    <div class="summary-actions">
-      <button id="btn-replay">Replay solution</button>
-      <button id="btn-try-another">Try another problem</button>
+  <div id="summary-screen" class="summary-screen hidden" role="dialog" aria-modal="true" aria-label="Problem complete">
+    <div class="summary-box">
+      <h2>All members solved!</h2>
+      <svg id="summary-svg" width="100%" height="200"></svg>
+      <table id="summary-table"></table>
+      <div class="summary-actions">
+        <button id="btn-replay">Replay solution</button>
+        <button id="btn-try-another">Try another problem</button>
+      </div>
     </div>
   </div>
 
-  <div id="replay-screen" class="replay-screen hidden">
+  <div id="replay-screen" class="replay-screen hidden" role="dialog" aria-label="Replay solution">
     <div class="replay-header">
       <span id="replay-step-label"></span>
       <button id="btn-replay-prev">← Prev</button>
