@@ -1,0 +1,168 @@
+<h2>FBD Prediction Interaction</h2>
+<p class="subtitle">How should the FBD arrow behave when a student clicks Tension or Compression for an unknown member? Three options for the predict → solve flow.</p>
+
+<div class="cards">
+
+  <!-- Option A: Arrow flips direction + fills with color -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8f9fa;padding:16px;border-radius:4px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+
+        <!-- State 1: Unknown -->
+        <div style="flex:1;text-align:center;">
+          <div style="font-size:10px;color:#6c757d;margin-bottom:6px;font-weight:bold;">Before prediction</div>
+          <svg width="100" height="100" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="10" fill="none" stroke="#adb5bd" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <text x="50" y="54" text-anchor="middle" font-size="9" fill="#adb5bd">A</text>
+            <!-- dashed unknown arrow -->
+            <line x1="50" y1="50" x2="88" y2="20" stroke="#adb5bd" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polygon points="88,20 80,22 84,30" fill="#adb5bd"/>
+            <text x="78" y="38" font-size="8" fill="#adb5bd">F_AD ?</text>
+            <!-- reaction known -->
+            <line x1="50" y1="50" x2="50" y2="15" stroke="#28a745" stroke-width="2"/>
+            <polygon points="50,15 46,23 54,23" fill="#28a745"/>
+            <text x="54" y="28" font-size="8" fill="#28a745">6 kN</text>
+            <!-- AB known -->
+            <line x1="50" y1="50" x2="88" y2="50" stroke="#185FA5" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polygon points="88,50 80,47 80,53" fill="#adb5bd"/>
+            <text x="68" y="62" font-size="8" fill="#adb5bd">F_AB ?</text>
+          </svg>
+          <div style="display:flex;gap:4px;margin-top:6px;">
+            <div style="flex:1;background:#f1f3f5;border:1px solid #dee2e6;border-radius:3px;padding:4px;font-size:9px;text-align:center;color:#6c757d;">T (+)</div>
+            <div style="flex:1;background:#f1f3f5;border:1px solid #dee2e6;border-radius:3px;padding:4px;font-size:9px;text-align:center;color:#6c757d;">C (−)</div>
+          </div>
+        </div>
+
+        <!-- Arrow -->
+        <div style="display:flex;align-items:center;padding-top:40px;color:#adb5bd;font-size:18px;">→</div>
+
+        <!-- State 2: Compression selected — arrow flips to point toward joint, fills red -->
+        <div style="flex:1;text-align:center;">
+          <div style="font-size:10px;color:#A32D2D;margin-bottom:6px;font-weight:bold;">After: Compression</div>
+          <svg width="100" height="100" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="10" fill="none" stroke="#adb5bd" stroke-width="1.5"/>
+            <text x="50" y="54" text-anchor="middle" font-size="9" fill="#495057">A</text>
+            <!-- compression: arrow points TOWARD joint (from outside in) -->
+            <line x1="88" y1="20" x2="56" y2="44" stroke="#A32D2D" stroke-width="2"/>
+            <polygon points="56,44 62,36 66,46" fill="#A32D2D"/>
+            <text x="78" y="30" font-size="8" fill="#A32D2D" font-weight="bold">F_AD C</text>
+            <!-- reaction known -->
+            <line x1="50" y1="50" x2="50" y2="15" stroke="#28a745" stroke-width="2"/>
+            <polygon points="50,15 46,23 54,23" fill="#28a745"/>
+            <text x="54" y="28" font-size="8" fill="#28a745">6 kN</text>
+            <!-- AB still unknown -->
+            <line x1="50" y1="50" x2="88" y2="50" stroke="#adb5bd" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polygon points="88,50 80,47 80,53" fill="#adb5bd"/>
+            <text x="68" y="62" font-size="8" fill="#adb5bd">F_AB ?</text>
+          </svg>
+          <div style="display:flex;gap:4px;margin-top:6px;">
+            <div style="flex:1;background:#f1f3f5;border:1px solid #dee2e6;border-radius:3px;padding:4px;font-size:9px;text-align:center;color:#6c757d;">T (+)</div>
+            <div style="flex:1;background:#A32D2D;border:1px solid #A32D2D;border-radius:3px;padding:4px;font-size:9px;text-align:center;color:white;font-weight:bold;">C (−) ✓</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Arrow flips direction on prediction</h3>
+      <p>Tension → arrow points away from joint. Compression → arrow flips to point toward joint. The FBD visually encodes the sign convention. Arrow fills with the color (blue/red) immediately. Dashed while unknown, solid once predicted.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Color overlay only, direction stays outward -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8f9fa;padding:16px;border-radius:4px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+
+        <!-- State 1: Unknown -->
+        <div style="flex:1;text-align:center;">
+          <div style="font-size:10px;color:#6c757d;margin-bottom:6px;font-weight:bold;">Before prediction</div>
+          <svg width="100" height="100" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="10" fill="none" stroke="#adb5bd" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <text x="50" y="54" text-anchor="middle" font-size="9" fill="#adb5bd">A</text>
+            <line x1="50" y1="50" x2="88" y2="20" stroke="#adb5bd" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polygon points="88,20 80,22 84,30" fill="#adb5bd"/>
+            <text x="76" y="38" font-size="8" fill="#adb5bd">?</text>
+            <line x1="50" y1="50" x2="50" y2="15" stroke="#28a745" stroke-width="2"/>
+            <polygon points="50,15 46,23 54,23" fill="#28a745"/>
+          </svg>
+          <div style="display:flex;gap:4px;margin-top:6px;">
+            <div style="flex:1;background:#f1f3f5;border:1px solid #dee2e6;border-radius:3px;padding:4px;font-size:9px;text-align:center;color:#6c757d;">T (+)</div>
+            <div style="flex:1;background:#f1f3f5;border:1px solid #dee2e6;border-radius:3px;padding:4px;font-size:9px;text-align:center;color:#6c757d;">C (−)</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;padding-top:40px;color:#adb5bd;font-size:18px;">→</div>
+
+        <!-- State 2: Compression selected — arrow stays outward but turns red + label changes -->
+        <div style="flex:1;text-align:center;">
+          <div style="font-size:10px;color:#A32D2D;margin-bottom:6px;font-weight:bold;">After: Compression</div>
+          <svg width="100" height="100" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="10" fill="none" stroke="#adb5bd" stroke-width="1.5"/>
+            <text x="50" y="54" text-anchor="middle" font-size="9" fill="#495057">A</text>
+            <!-- stays outward, but turns red, solid, and adds (−) label -->
+            <line x1="50" y1="50" x2="88" y2="20" stroke="#A32D2D" stroke-width="2"/>
+            <polygon points="88,20 80,22 84,30" fill="#A32D2D"/>
+            <text x="74" y="30" font-size="8" fill="#A32D2D" font-weight="bold">C(−)</text>
+            <line x1="50" y1="50" x2="50" y2="15" stroke="#28a745" stroke-width="2"/>
+            <polygon points="50,15 46,23 54,23" fill="#28a745"/>
+          </svg>
+          <div style="display:flex;gap:4px;margin-top:6px;">
+            <div style="flex:1;background:#f1f3f5;border:1px solid #dee2e6;border-radius:3px;padding:4px;font-size:9px;text-align:center;color:#6c757d;">T (+)</div>
+            <div style="flex:1;background:#A32D2D;border-radius:3px;padding:4px;font-size:9px;text-align:center;color:white;font-weight:bold;">C (−) ✓</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Color change only, arrow stays outward</h3>
+      <p>Arrow always points away from the joint (the positive/tension direction). Prediction just changes the color and label. Simpler, less confusing, but doesn't reinforce the physical sign convention as strongly.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Split panel — prediction buttons on the side, FBD updates live -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8f9fa;padding:16px;border-radius:4px;">
+      <div style="display:grid;grid-template-columns:1fr 110px;gap:10px;height:140px;">
+        <!-- FBD -->
+        <div style="background:#e9ecef;border-radius:4px;display:flex;align-items:center;justify-content:center;">
+          <svg width="150" height="120" viewBox="0 0 150 120">
+            <circle cx="75" cy="60" r="12" fill="#185FA5" opacity=".15" stroke="#185FA5" stroke-width="1.5"/>
+            <text x="75" y="64" text-anchor="middle" font-size="10" fill="#185FA5" font-weight="bold">A</text>
+            <!-- Ay reaction -->
+            <line x1="75" y1="60" x2="75" y2="18" stroke="#28a745" stroke-width="2.5"/>
+            <polygon points="75,18 70,28 80,28" fill="#28a745"/>
+            <text x="80" y="32" font-size="9" fill="#28a745">A_y = 6 kN</text>
+            <!-- AD: compression predicted — arrow inward, red solid -->
+            <line x1="135" y1="18" x2="83" y2="52" stroke="#A32D2D" stroke-width="2"/>
+            <polygon points="83,52 88,44 94,52" fill="#A32D2D"/>
+            <text x="112" y="26" font-size="9" fill="#A32D2D" font-weight="bold">AD C</text>
+            <!-- AB: unknown still dashed -->
+            <line x1="75" y1="60" x2="140" y2="60" stroke="#adb5bd" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <polygon points="140,60 132,57 132,63" fill="#adb5bd"/>
+            <text x="105" y="72" font-size="9" fill="#adb5bd">F_AB ?</text>
+          </svg>
+        </div>
+        <!-- Controls -->
+        <div style="display:flex;flex-direction:column;gap:6px;padding:8px;background:#e9ecef;border-radius:4px;">
+          <div style="font-size:9px;font-weight:bold;color:#6c757d;text-transform:uppercase;">Select member:</div>
+          <div style="background:#A32D2D;color:white;border-radius:3px;padding:5px 8px;font-size:9px;font-weight:bold;">AD — C(−)</div>
+          <div style="background:#dee2e6;color:#adb5bd;border-radius:3px;padding:5px 8px;font-size:9px;">AB — ?</div>
+          <div style="border-top:1px solid #dee2e6;padding-top:6px;display:flex;flex-direction:column;gap:4px;">
+            <div style="font-size:9px;font-weight:bold;color:#6c757d;">Predict AB:</div>
+            <button style="background:#e7f0fb;color:#185FA5;border:1px solid #185FA5;border-radius:3px;padding:4px;font-size:9px;">Tension (+)</button>
+            <button style="background:#f9e8e8;color:#A32D2D;border:1px solid #A32D2D;border-radius:3px;padding:4px;font-size:9px;">Compression (−)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Member list + prediction buttons side panel</h3>
+      <p>FBD is the main visual. A sidebar lists all unknown members at this joint; clicking one member at a time, then choosing T or C. More structured workflow, but adds an extra click vs. inline buttons per arrow.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:12px;">Your spec describes Option A (arrows flip with sign convention). Click to confirm or choose an alternative. Tell me in the terminal if you want a hybrid.</p>

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash *)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(python3 *)",
+      "Bash(node --input-type=module)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(node -e \"const d=require\\('./problems.json'\\); console.log\\('Valid JSON'\\); console.log\\('Problems:', d.length\\); d.forEach\\(p=>console.log\\(' -', p.name, '| joints:', p.joints.length, '| members:', p.members.length\\)\\)\")",
+      "Bash(node *)"
+    ]
+  }
+}

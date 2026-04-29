@@ -1,0 +1,229 @@
+<h2>Overall App Layout</h2>
+<p class="subtitle">Which panel arrangement works best for a student working through joint-by-joint analysis?</p>
+
+<div class="cards">
+
+  <!-- Option A: Left sidebar truss + center FBD + right ledger -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8f9fa;padding:16px;font-family:monospace;font-size:11px;border-radius:4px;">
+      <div style="display:grid;grid-template-columns:220px 1fr 180px;gap:8px;height:200px;">
+        <div style="background:#e9ecef;border-radius:4px;padding:10px;display:flex;flex-direction:column;gap:6px;">
+          <div style="font-weight:bold;font-size:10px;color:#6c757d;text-transform:uppercase;letter-spacing:.5px;">Truss Overview</div>
+          <div style="flex:1;background:#dee2e6;border-radius:3px;display:flex;align-items:center;justify-content:center;">
+            <svg width="140" height="100" viewBox="0 0 140 100">
+              <!-- king post truss sketch -->
+              <line x1="10" y1="80" x2="130" y2="80" stroke="#adb5bd" stroke-width="2"/>
+              <line x1="10" y1="80" x2="70" y2="30" stroke="#adb5bd" stroke-width="2"/>
+              <line x1="130" y1="80" x2="70" y2="30" stroke="#adb5bd" stroke-width="2"/>
+              <line x1="70" y1="30" x2="70" y2="80" stroke="#adb5bd" stroke-width="2"/>
+              <!-- joints -->
+              <circle cx="10" cy="80" r="6" fill="#28a745" stroke="white" stroke-width="1.5"/>
+              <circle cx="130" cy="80" r="6" fill="#28a745" stroke="white" stroke-width="1.5"/>
+              <circle cx="70" cy="80" r="5" fill="#6c757d" stroke="white" stroke-width="1.5"/>
+              <circle cx="70" cy="30" r="5" fill="#6c757d" stroke="white" stroke-width="1.5"/>
+              <!-- labels -->
+              <text x="8" y="96" font-size="9" fill="#495057" font-weight="bold">A</text>
+              <text x="128" y="96" font-size="9" fill="#495057" font-weight="bold">C</text>
+              <text x="65" y="96" font-size="9" fill="#495057">B</text>
+              <text x="65" y="25" font-size="9" fill="#495057">D</text>
+            </svg>
+          </div>
+          <div style="font-size:9px;color:#6c757d;text-align:center;">Click a joint to solve</div>
+          <div style="background:#185FA5;color:white;border-radius:3px;padding:4px 8px;font-size:10px;text-align:center;">Joint A — active</div>
+          <div style="background:#dee2e6;border-radius:3px;padding:4px 8px;font-size:10px;text-align:center;color:#6c757d;">Joint C — available</div>
+          <div style="background:#f1f3f5;border-radius:3px;padding:4px 8px;font-size:10px;text-align:center;color:#adb5bd;">Joint B — locked</div>
+        </div>
+        <div style="background:#e9ecef;border-radius:4px;padding:10px;display:flex;flex-direction:column;gap:6px;">
+          <div style="font-weight:bold;font-size:10px;color:#6c757d;text-transform:uppercase;letter-spacing:.5px;">Free Body Diagram — Joint A</div>
+          <div style="flex:1;background:#dee2e6;border-radius:3px;display:flex;align-items:center;justify-content:center;">
+            <svg width="160" height="120" viewBox="0 0 160 120">
+              <!-- joint circle -->
+              <circle cx="80" cy="60" r="10" fill="#185FA5" opacity=".2" stroke="#185FA5" stroke-width="1.5"/>
+              <text x="80" y="64" text-anchor="middle" font-size="10" fill="#185FA5" font-weight="bold">A</text>
+              <!-- reaction Ay upward (green) -->
+              <line x1="80" y1="60" x2="80" y2="20" stroke="#28a745" stroke-width="2" marker-end="url(#ag)"/>
+              <text x="88" y="35" font-size="9" fill="#28a745">A_y=6↑</text>
+              <!-- AB rightward (blue solid - known) -->
+              <line x1="80" y1="60" x2="140" y2="60" stroke="#185FA5" stroke-width="2" marker-end="url(#ab)"/>
+              <text x="105" y="55" font-size="9" fill="#185FA5">F_AB?</text>
+              <!-- AD diagonal (dashed - unknown) -->
+              <line x1="80" y1="60" x2="130" y2="25" stroke="#6c757d" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#ad)"/>
+              <text x="112" y="40" font-size="9" fill="#6c757d">F_AD?</text>
+              <defs>
+                <marker id="ag" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#28a745"/></marker>
+                <marker id="ab" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#185FA5"/></marker>
+                <marker id="ad" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#6c757d"/></marker>
+              </defs>
+            </svg>
+          </div>
+          <div style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:3px;padding:6px;font-family:monospace;font-size:10px;color:#495057;">
+            ΣF_x = A_x + F_AB + F_AD·cos(θ) = 0<br>
+            ΣF_y = A_y + F_AD·sin(θ) = 0
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button style="flex:1;background:#185FA5;color:white;border:none;border-radius:3px;padding:5px;font-size:10px;cursor:pointer;">Tension (+)</button>
+            <button style="flex:1;background:#A32D2D;color:white;border:none;border-radius:3px;padding:5px;font-size:10px;cursor:pointer;">Compression (−)</button>
+            <button style="flex:1;background:#f8f9fa;color:#495057;border:1px solid #dee2e6;border-radius:3px;padding:5px;font-size:10px;cursor:pointer;">Solve &amp; Verify</button>
+          </div>
+        </div>
+        <div style="background:#e9ecef;border-radius:4px;padding:10px;display:flex;flex-direction:column;gap:6px;">
+          <div style="font-weight:bold;font-size:10px;color:#6c757d;text-transform:uppercase;letter-spacing:.5px;">Member Ledger</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <div style="background:#dee2e6;border-radius:3px;padding:5px 7px;font-size:9px;display:flex;justify-content:space-between;"><span>AB</span><span style="color:#adb5bd;">?</span></div>
+            <div style="background:#dee2e6;border-radius:3px;padding:5px 7px;font-size:9px;display:flex;justify-content:space-between;"><span>AD</span><span style="color:#adb5bd;">?</span></div>
+            <div style="background:#dee2e6;border-radius:3px;padding:5px 7px;font-size:9px;display:flex;justify-content:space-between;"><span>BC</span><span style="color:#adb5bd;">?</span></div>
+            <div style="background:#dee2e6;border-radius:3px;padding:5px 7px;font-size:9px;display:flex;justify-content:space-between;"><span>BD</span><span style="color:#adb5bd;">?</span></div>
+            <div style="background:#dee2e6;border-radius:3px;padding:5px 7px;font-size:9px;display:flex;justify-content:space-between;"><span>CD</span><span style="color:#adb5bd;">?</span></div>
+          </div>
+          <div style="font-size:9px;color:#adb5bd;text-align:center;margin-top:4px;">All members unknown</div>
+          <div style="border-top:1px solid #dee2e6;margin-top:4px;padding-top:6px;display:flex;flex-direction:column;gap:4px;">
+            <button style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:3px;padding:4px;font-size:9px;color:#495057;">Hint</button>
+            <button style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:3px;padding:4px;font-size:9px;color:#A32D2D;">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Three-column with sidebar truss</h3>
+      <p>Truss overview in a fixed left panel. Center panel handles the FBD. Right panel is the member ledger. All three visible at once. Students always see the whole truss context.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Top truss overview + bottom FBD + floating ledger -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8f9fa;padding:16px;font-family:monospace;font-size:11px;border-radius:4px;">
+      <div style="display:flex;flex-direction:column;gap:8px;height:200px;">
+        <div style="background:#e9ecef;border-radius:4px;padding:8px;display:flex;align-items:center;gap:12px;height:72px;">
+          <div style="font-size:10px;font-weight:bold;color:#6c757d;white-space:nowrap;">Truss Overview</div>
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+            <svg width="220" height="52" viewBox="0 0 220 52">
+              <line x1="10" y1="42" x2="210" y2="42" stroke="#adb5bd" stroke-width="2"/>
+              <line x1="10" y1="42" x2="110" y2="10" stroke="#adb5bd" stroke-width="2"/>
+              <line x1="210" y1="42" x2="110" y2="10" stroke="#adb5bd" stroke-width="2"/>
+              <line x1="110" y1="10" x2="110" y2="42" stroke="#adb5bd" stroke-width="2"/>
+              <circle cx="10" cy="42" r="7" fill="#185FA5" stroke="white" stroke-width="1.5"/>
+              <circle cx="210" cy="42" r="6" fill="#28a745" stroke="white" stroke-width="1.5"/>
+              <circle cx="110" cy="42" r="5" fill="#dee2e6" stroke="#adb5bd" stroke-width="1.5"/>
+              <circle cx="110" cy="10" r="5" fill="#dee2e6" stroke="#adb5bd" stroke-width="1.5"/>
+              <text x="8" y="58" font-size="9" fill="#185FA5" font-weight="bold">A ●</text>
+              <text x="205" y="58" font-size="9" fill="#28a745">C</text>
+              <text x="105" y="58" font-size="9" fill="#adb5bd">B</text>
+              <text x="105" y="8" font-size="9" fill="#adb5bd">D</text>
+            </svg>
+          </div>
+          <div style="font-size:9px;color:#185FA5;background:#e7f0fb;padding:3px 7px;border-radius:3px;white-space:nowrap;">Solving: A</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 160px;gap:8px;flex:1;">
+          <div style="background:#e9ecef;border-radius:4px;padding:8px;display:flex;flex-direction:column;gap:5px;">
+            <div style="font-size:10px;font-weight:bold;color:#6c757d;text-transform:uppercase;letter-spacing:.5px;">FBD — Joint A</div>
+            <div style="flex:1;background:#dee2e6;border-radius:3px;display:flex;align-items:center;justify-content:center;">
+              <svg width="120" height="72" viewBox="0 0 120 72">
+                <circle cx="60" cy="36" r="8" fill="#185FA5" opacity=".2" stroke="#185FA5" stroke-width="1.5"/>
+                <text x="60" y="40" text-anchor="middle" font-size="9" fill="#185FA5" font-weight="bold">A</text>
+                <line x1="60" y1="36" x2="60" y2="8" stroke="#28a745" stroke-width="2" marker-end="url(#ag2)"/>
+                <text x="64" y="20" font-size="8" fill="#28a745">6↑</text>
+                <line x1="60" y1="36" x2="110" y2="36" stroke="#185FA5" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#ab2)"/>
+                <line x1="60" y1="36" x2="100" y2="12" stroke="#6c757d" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#ad2)"/>
+                <defs>
+                  <marker id="ag2" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L5,2.5 z" fill="#28a745"/></marker>
+                  <marker id="ab2" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L5,2.5 z" fill="#185FA5"/></marker>
+                  <marker id="ad2" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L5,2.5 z" fill="#6c757d"/></marker>
+                </defs>
+              </svg>
+            </div>
+            <div style="display:flex;gap:5px;">
+              <button style="flex:1;background:#185FA5;color:white;border:none;border-radius:3px;padding:4px;font-size:9px;">T(+)</button>
+              <button style="flex:1;background:#A32D2D;color:white;border:none;border-radius:3px;padding:4px;font-size:9px;">C(−)</button>
+              <button style="flex:1;background:#28a745;color:white;border:none;border-radius:3px;padding:4px;font-size:9px;">Solve</button>
+            </div>
+          </div>
+          <div style="background:#e9ecef;border-radius:4px;padding:8px;display:flex;flex-direction:column;gap:4px;">
+            <div style="font-size:10px;font-weight:bold;color:#6c757d;text-transform:uppercase;letter-spacing:.5px;">Ledger</div>
+            <div style="display:flex;flex-direction:column;gap:3px;flex:1;">
+              <div style="background:#dee2e6;border-radius:2px;padding:4px 6px;font-size:9px;display:flex;justify-content:space-between;"><span>AB</span><span style="color:#adb5bd;">?</span></div>
+              <div style="background:#dee2e6;border-radius:2px;padding:4px 6px;font-size:9px;display:flex;justify-content:space-between;"><span>AD</span><span style="color:#adb5bd;">?</span></div>
+              <div style="background:#dee2e6;border-radius:2px;padding:4px 6px;font-size:9px;display:flex;justify-content:space-between;"><span>BC</span><span style="color:#adb5bd;">?</span></div>
+              <div style="background:#dee2e6;border-radius:2px;padding:4px 6px;font-size:9px;display:flex;justify-content:space-between;"><span>BD</span><span style="color:#adb5bd;">?</span></div>
+              <div style="background:#dee2e6;border-radius:2px;padding:4px 6px;font-size:9px;display:flex;justify-content:space-between;"><span>CD</span><span style="color:#adb5bd;">?</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Truss banner + FBD below</h3>
+      <p>Truss runs as a compact banner across the top. FBD takes up most of the vertical space below. Ledger is a narrow right column. Better vertical use on wide monitors, natural reading flow top-to-bottom.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Tabbed / step-by-step with progress -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f8f9fa;padding:16px;font-family:monospace;font-size:11px;border-radius:4px;">
+      <div style="display:flex;flex-direction:column;gap:8px;height:200px;">
+        <!-- step indicator -->
+        <div style="display:flex;align-items:center;gap:4px;padding:6px 8px;background:#e9ecef;border-radius:4px;">
+          <div style="width:22px;height:22px;border-radius:50%;background:#185FA5;color:white;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:bold;">1</div>
+          <div style="font-size:9px;color:#185FA5;font-weight:bold;">Select Joint</div>
+          <div style="width:20px;height:1px;background:#adb5bd;"></div>
+          <div style="width:22px;height:22px;border-radius:50%;background:#dee2e6;color:#adb5bd;display:flex;align-items:center;justify-content:center;font-size:9px;">2</div>
+          <div style="font-size:9px;color:#adb5bd;">Predict</div>
+          <div style="width:20px;height:1px;background:#adb5bd;"></div>
+          <div style="width:22px;height:22px;border-radius:50%;background:#dee2e6;color:#adb5bd;display:flex;align-items:center;justify-content:center;font-size:9px;">3</div>
+          <div style="font-size:9px;color:#adb5bd;">Solve</div>
+          <div style="flex:1;height:1px;background:#adb5bd;"></div>
+          <div style="font-size:9px;color:#adb5bd;">5 members remaining</div>
+        </div>
+        <!-- main content -->
+        <div style="flex:1;display:grid;grid-template-columns:1fr 180px;gap:8px;">
+          <div style="background:#e9ecef;border-radius:4px;padding:8px;display:flex;flex-direction:column;gap:6px;">
+            <div style="font-size:10px;font-weight:bold;color:#6c757d;text-transform:uppercase;letter-spacing:.5px;">Step 1 — Choose a joint to analyze</div>
+            <div style="flex:1;background:#dee2e6;border-radius:3px;display:flex;align-items:center;justify-content:center;position:relative;">
+              <svg width="200" height="100" viewBox="0 0 200 100">
+                <line x1="20" y1="80" x2="180" y2="80" stroke="#adb5bd" stroke-width="2"/>
+                <line x1="20" y1="80" x2="100" y2="20" stroke="#adb5bd" stroke-width="2"/>
+                <line x1="180" y1="80" x2="100" y2="20" stroke="#adb5bd" stroke-width="2"/>
+                <line x1="100" y1="20" x2="100" y2="80" stroke="#adb5bd" stroke-width="2"/>
+                <!-- A - clickable green -->
+                <circle cx="20" cy="80" r="9" fill="#28a745" stroke="white" stroke-width="2"/>
+                <text x="20" y="84" text-anchor="middle" font-size="9" fill="white" font-weight="bold">A</text>
+                <!-- C - clickable green -->
+                <circle cx="180" cy="80" r="9" fill="#28a745" stroke="white" stroke-width="2"/>
+                <text x="180" y="84" text-anchor="middle" font-size="9" fill="white" font-weight="bold">C</text>
+                <!-- B - locked gray -->
+                <circle cx="100" cy="80" r="7" fill="#dee2e6" stroke="#adb5bd" stroke-width="1.5"/>
+                <text x="100" y="84" text-anchor="middle" font-size="9" fill="#adb5bd">B</text>
+                <!-- D - locked gray -->
+                <circle cx="100" cy="20" r="7" fill="#dee2e6" stroke="#adb5bd" stroke-width="1.5"/>
+                <text x="100" y="24" text-anchor="middle" font-size="9" fill="#adb5bd">D</text>
+                <!-- tooltip -->
+                <rect x="108" y="64" width="64" height="18" rx="3" fill="rgba(0,0,0,.6)"/>
+                <text x="140" y="76" text-anchor="middle" font-size="8" fill="white">3 unknowns — locked</text>
+              </svg>
+            </div>
+            <div style="font-size:9px;color:#28a745;text-align:center;">Green joints are solvable. Click one to start.</div>
+          </div>
+          <div style="background:#e9ecef;border-radius:4px;padding:8px;display:flex;flex-direction:column;gap:4px;">
+            <div style="font-size:10px;font-weight:bold;color:#6c757d;text-transform:uppercase;letter-spacing:.5px;">Progress</div>
+            <div style="display:flex;flex-direction:column;gap:3px;flex:1;">
+              <div style="background:#dee2e6;border-radius:2px;padding:4px 6px;font-size:9px;display:flex;justify-content:space-between;"><span>AB</span><span style="color:#adb5bd;">—</span></div>
+              <div style="background:#dee2e6;border-radius:2px;padding:4px 6px;font-size:9px;display:flex;justify-content:space-between;"><span>AD</span><span style="color:#adb5bd;">—</span></div>
+              <div style="background:#dee2e6;border-radius:2px;padding:4px 6px;font-size:9px;display:flex;justify-content:space-between;"><span>BC</span><span style="color:#adb5bd;">—</span></div>
+              <div style="background:#dee2e6;border-radius:2px;padding:4px 6px;font-size:9px;display:flex;justify-content:space-between;"><span>BD</span><span style="color:#adb5bd;">—</span></div>
+              <div style="background:#dee2e6;border-radius:2px;padding:4px 6px;font-size:9px;display:flex;justify-content:space-between;"><span>CD</span><span style="color:#adb5bd;">—</span></div>
+            </div>
+            <div style="background:#e7f0fb;border-radius:3px;padding:5px;font-size:9px;color:#185FA5;text-align:center;">
+              Solve all 5 members to complete
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Step-by-step guided flow</h3>
+      <p>A progress indicator walks students through: Select Joint → Predict → Solve. Truss overview is the primary content area at each step. More linear, better for beginners who need hand-holding through each phase.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:12px;">Click a card to select your preferred layout. You can also type your preference or thoughts in the terminal.</p>

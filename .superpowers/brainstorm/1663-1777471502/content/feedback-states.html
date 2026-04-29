@@ -1,0 +1,138 @@
+<h2>Feedback After "Solve &amp; Verify"</h2>
+<p class="subtitle">What does the student see immediately after submitting predictions? Two states: wrong prediction and correct prediction.</p>
+
+<div class="section">
+  <h3 style="color:#A32D2D;">Wrong prediction state</h3>
+
+  <div class="mockup">
+    <div class="mockup-header">Joint A — wrong prediction on F_AD</div>
+    <div class="mockup-body" style="padding:0;">
+      <div style="display:grid;grid-template-columns:1fr 140px;gap:0;">
+
+        <!-- FBD area -->
+        <div style="padding:16px;border-right:1px solid #dee2e6;">
+          <div style="display:grid;grid-template-columns:1fr 120px;gap:12px;align-items:start;">
+            <!-- SVG FBD -->
+            <div style="display:flex;align-items:center;justify-content:center;">
+              <svg width="180" height="150" viewBox="0 0 180 150">
+                <circle cx="90" cy="75" r="13" fill="#fff3cd" stroke="#ffc107" stroke-width="2"/>
+                <text x="90" y="79" text-anchor="middle" font-size="10" fill="#856404" font-weight="bold">A</text>
+                <!-- Ay reaction -->
+                <line x1="90" y1="75" x2="90" y2="25" stroke="#28a745" stroke-width="2.5"/>
+                <polygon points="90,25 85,35 95,35" fill="#28a745"/>
+                <text x="96" y="42" font-size="9" fill="#28a745">A_y = 6 kN</text>
+                <!-- AD: student said Tension (outward) — WRONG, should be compression -->
+                <line x1="90" y1="75" x2="155" y2="28" stroke="#A32D2D" stroke-width="2.5" stroke-dasharray="0"/>
+                <polygon points="155,28 144,32 148,42" fill="#A32D2D"/>
+                <rect x="142" y="14" width="32" height="14" rx="3" fill="#A32D2D" opacity=".15"/>
+                <text x="158" y="24" text-anchor="middle" font-size="8" fill="#A32D2D" font-weight="bold">T ✗</text>
+                <!-- AB: student said Tension — correct -->
+                <line x1="90" y1="75" x2="165" y2="75" stroke="#185FA5" stroke-width="2"/>
+                <polygon points="165,75 155,71 155,79" fill="#185FA5"/>
+                <text x="130" y="68" font-size="9" fill="#185FA5">F_AB = 8 kN T</text>
+              </svg>
+            </div>
+            <!-- Equations -->
+            <div style="font-family:monospace;font-size:11px;color:#495057;line-height:1.8;">
+              <div style="font-weight:bold;color:#6c757d;font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Equilibrium</div>
+              <div>ΣF_x = 0:</div>
+              <div style="padding-left:8px;color:#495057;">F_AB + F_AD·(4/5) = 0</div>
+              <div style="margin-top:4px;">ΣF_y = 0:</div>
+              <div style="padding-left:8px;color:#495057;">6 + F_AD·(3/5) = 0</div>
+              <div style="margin-top:8px;padding:6px;background:#f8d7da;border-radius:3px;font-size:10px;color:#842029;border:1px solid #f5c2c7;">
+                F_AD = −10 kN<br>
+                <span style="font-size:9px;">Your prediction: Tension<br>Actual: Compression</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side panel -->
+        <div style="padding:12px;display:flex;flex-direction:column;gap:8px;">
+          <div style="font-size:10px;font-weight:bold;color:#6c757d;text-transform:uppercase;letter-spacing:.5px;">Members at A</div>
+          <div style="background:#f8d7da;border:1.5px solid #A32D2D;border-radius:4px;padding:7px 10px;font-size:11px;color:#A32D2D;font-weight:bold;">
+            AD — T ✗
+            <div style="font-size:9px;font-weight:normal;color:#842029;margin-top:2px;">Predicted: Tension<br>Actual: −10 kN C</div>
+          </div>
+          <div style="background:#d1ecf1;border:1px solid #185FA5;border-radius:4px;padding:7px 10px;font-size:11px;color:#185FA5;">
+            AB — T ✓
+            <div style="font-size:9px;color:#0c5460;margin-top:2px;">+8 kN</div>
+          </div>
+          <button style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:4px;padding:6px;font-size:10px;color:#495057;cursor:pointer;margin-top:4px;">Try Again</button>
+        </div>
+      </div>
+
+      <!-- Diagnostic message below FBD -->
+      <div style="margin:0 16px 16px;padding:10px 14px;background:#fff3cd;border-left:4px solid #ffc107;border-radius:0 4px 4px 0;font-size:12px;color:#664d03;line-height:1.6;">
+        <strong>Why compression?</strong> A_y pushes joint A upward with 6 kN. For ΣF_y = 0, the y-component of F_AD must push downward — which means AD is pushing the joint, so it's in <strong>compression</strong>. A tension member would pull, adding upward force and making the sum non-zero.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px;">
+  <h3 style="color:#28a745;">Correct prediction state</h3>
+
+  <div class="mockup">
+    <div class="mockup-header">Joint A — all predictions correct</div>
+    <div class="mockup-body" style="padding:0;">
+      <div style="display:grid;grid-template-columns:1fr 140px;gap:0;">
+
+        <!-- FBD area -->
+        <div style="padding:16px;border-right:1px solid #dee2e6;">
+          <div style="display:grid;grid-template-columns:1fr 120px;gap:12px;align-items:start;">
+            <div style="display:flex;align-items:center;justify-content:center;">
+              <svg width="180" height="150" viewBox="0 0 180 150">
+                <circle cx="90" cy="75" r="13" fill="#d1e7dd" stroke="#28a745" stroke-width="2"/>
+                <text x="90" y="79" text-anchor="middle" font-size="10" fill="#0f5132" font-weight="bold">A</text>
+                <!-- Ay reaction -->
+                <line x1="90" y1="75" x2="90" y2="25" stroke="#28a745" stroke-width="2.5"/>
+                <polygon points="90,25 85,35 95,35" fill="#28a745"/>
+                <text x="96" y="42" font-size="9" fill="#28a745">A_y = 6 kN</text>
+                <!-- AD: compression correct — arrow points toward joint -->
+                <line x1="155" y1="28" x2="98" y2="68" stroke="#A32D2D" stroke-width="2.5"/>
+                <polygon points="98,68 106,62 112,70" fill="#A32D2D"/>
+                <text x="148" y="24" font-size="9" fill="#A32D2D" font-weight="bold">AD −10 kN C</text>
+                <!-- AB: tension correct -->
+                <line x1="90" y1="75" x2="165" y2="75" stroke="#185FA5" stroke-width="2.5"/>
+                <polygon points="165,75 155,71 155,79" fill="#185FA5"/>
+                <text x="122" y="68" font-size="9" fill="#185FA5">AB +8 kN T</text>
+              </svg>
+            </div>
+            <div style="font-family:monospace;font-size:11px;color:#495057;line-height:1.8;">
+              <div style="font-weight:bold;color:#6c757d;font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Equilibrium</div>
+              <div>ΣF_x = 0:</div>
+              <div style="padding-left:8px;">8 + (−10)·(4/5) = 0 ✓</div>
+              <div style="margin-top:4px;">ΣF_y = 0:</div>
+              <div style="padding-left:8px;">6 + (−10)·(3/5) = 0 ✓</div>
+              <div style="margin-top:8px;padding:6px;background:#d1e7dd;border-radius:3px;font-size:10px;color:#0f5132;border:1px solid #a3cfbb;">
+                Both equations balance.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side panel -->
+        <div style="padding:12px;display:flex;flex-direction:column;gap:8px;">
+          <div style="font-size:10px;font-weight:bold;color:#6c757d;text-transform:uppercase;letter-spacing:.5px;">Members at A</div>
+          <div style="background:#d1e7dd;border:1px solid #28a745;border-radius:4px;padding:7px 10px;font-size:11px;color:#0f5132;">
+            AD — C ✓
+            <div style="font-size:9px;color:#0f5132;margin-top:2px;">−10 kN</div>
+          </div>
+          <div style="background:#d1ecf1;border:1px solid #185FA5;border-radius:4px;padding:7px 10px;font-size:11px;color:#185FA5;">
+            AB — T ✓
+            <div style="font-size:9px;color:#0c5460;margin-top:2px;">+8 kN</div>
+          </div>
+          <button style="background:#28a745;color:white;border:none;border-radius:4px;padding:8px;font-size:10px;font-weight:bold;cursor:pointer;margin-top:4px;">Next Joint →</button>
+        </div>
+      </div>
+
+      <!-- Success message -->
+      <div style="margin:0 16px 16px;padding:10px 14px;background:#d1e7dd;border-left:4px solid #28a745;border-radius:0 4px 4px 0;font-size:12px;color:#0f5132;line-height:1.6;">
+        <strong>Joint A solved.</strong> Members AD (−10 kN C) and AB (+8 kN T) added to the ledger. Joint C is now unlocked — it has exactly 2 unknowns.
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:16px;">Does this feedback style work? Let me know in the terminal if you'd adjust the diagnostic message tone, the wrong-answer flow, or the "Next Joint" unlock behavior.</p>
