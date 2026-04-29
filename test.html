@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html><body>
+<pre id="out"></pre>
+<script type="module">
+import { getMemberAngle, getSolvableJoints } from './truss.js';
+
+const KING_POST = {
+  joints: [
+    { id: 'A', x: 0, y: 0 }, { id: 'B', x: 4, y: 0 },
+    { id: 'C', x: 8, y: 0 }, { id: 'D', x: 4, y: 3 }
+  ],
+  members: [
+    { id: 'AB', j1: 'A', j2: 'B' }, { id: 'BC', j1: 'B', j2: 'C' },
+    { id: 'BD', j1: 'B', j2: 'D' }, { id: 'AD', j1: 'A', j2: 'D' },
+    { id: 'CD', j1: 'C', j2: 'D' }
+  ],
+  loads: [{ joint: 'D', fx: 0, fy: -12 }],
+  reactions: [{ joint: 'A', fx: 0, fy: 6 }, { joint: 'C', fx: 0, fy: 6 }]
+};
+
+const results = [];
+
+function assert(name, got, expected, tol = 1e-9) {
+  const pass = Math.abs(got - expected) < tol;
+  results.push(`${pass ? 'PASS' : 'FAIL'}: ${name} — got ${got}, expected ${expected}`);
+}
+
+// getMemberAngle: AB from A points right → angle 0
+assert('AB from A → 0', getMemberAngle('AB', 'A', KING_POST), 0);
+// AB from B points left → angle Math.PI
+assert('AB from B → π', getMemberAngle('AB', 'B', KING_POST), Math.PI);
+// AD from A: D is at (4,3) from A(0,0) → atan2(3,4)
+assert('AD from A → atan2(3,4)', getMemberAngle('AD', 'A', KING_POST), Math.atan2(3, 4));
+
+// getSolvableJoints with no solved forces: A and C have 2 unknowns each
+const solvable0 = getSolvableJoints(KING_POST, {});
+results.push(`${solvable0.includes('A') && solvable0.includes('C') ? 'PASS' : 'FAIL'}: solvable0 includes A and C`);
+results.push(`${!solvable0.includes('B') && !solvable0.includes('D') ? 'PASS' : 'FAIL'}: solvable0 excludes B and D`);
+
+// After solving AD and AB, joint D has 2 unknowns: BD and CD → solvable
+const solvable1 = getSolvableJoints(KING_POST, { AD: -10, AB: 8, CD: -10, BC: 8 });
+results.push(`${solvable1.includes('B') || solvable1.includes('D') ? 'PASS' : 'FAIL'}: solvable1 includes B or D`);
+
+document.getElementById('out').textContent = results.join('\n');
+</script>
+</body></html>
