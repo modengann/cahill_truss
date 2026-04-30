@@ -22,9 +22,78 @@ const btnReset    = document.getElementById('btn-reset');
 const feedbackEl  = document.getElementById('feedback-message');
 const ledgerList  = document.getElementById('ledger-list');
 const panelTitle  = document.querySelector('.fbd-panel .panel-title');
+const bannerEl    = document.getElementById('truss-banner');
+const sidePanel   = document.querySelector('.side-panel');
+
+const OVERVIEW_DEFAULT_H = 160;
+const OVERVIEW_MIN_H     = 80;
+const SIDE_DEFAULT_W     = 280;
+const SIDE_MIN_W         = 200;
+const SIDE_MAX_W         = 480;
+
+// ── Resize handles ─────────────────────────────────────────────
+function initResizeHandles() {
+  const handleH = document.getElementById('resize-handle-h');
+  const handleV = document.getElementById('resize-handle-v');
+
+  const savedH = parseInt(localStorage.getItem('truss-overview-h'), 10);
+  const savedW = parseInt(localStorage.getItem('truss-side-w'), 10);
+  bannerEl.style.height = (savedH || OVERVIEW_DEFAULT_H) + 'px';
+  sidePanel.style.width = (savedW || SIDE_DEFAULT_W) + 'px';
+
+  handleH.addEventListener('mousedown', e => {
+    e.preventDefault();
+    handleH.classList.add('dragging');
+    document.body.style.cursor = 'row-resize';
+    document.body.style.userSelect = 'none';
+    const startY = e.clientY;
+    const startH = bannerEl.getBoundingClientRect().height;
+
+    const onMove = e => {
+      const maxH = window.innerHeight * 0.45;
+      const newH = Math.min(maxH, Math.max(OVERVIEW_MIN_H, startH + e.clientY - startY));
+      bannerEl.style.height = newH + 'px';
+    };
+    const onUp = () => {
+      handleH.classList.remove('dragging');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      localStorage.setItem('truss-overview-h', Math.round(bannerEl.getBoundingClientRect().height));
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+
+  handleV.addEventListener('mousedown', e => {
+    e.preventDefault();
+    handleV.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    const startX = e.clientX;
+    const startW = sidePanel.getBoundingClientRect().width;
+
+    const onMove = e => {
+      const newW = Math.min(SIDE_MAX_W, Math.max(SIDE_MIN_W, startW - (e.clientX - startX)));
+      sidePanel.style.width = newW + 'px';
+    };
+    const onUp = () => {
+      handleV.classList.remove('dragging');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      localStorage.setItem('truss-side-w', Math.round(sidePanel.getBoundingClientRect().width));
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+}
 
 // ── Boot ───────────────────────────────────────────────────────
 async function boot() {
+  initResizeHandles();
   const res = await fetch('./problems.json');
   const problems = await res.json();
 
