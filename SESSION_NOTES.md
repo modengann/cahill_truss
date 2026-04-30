@@ -1,34 +1,40 @@
 # Method of Joints Trainer — Session Notes
 
 ## Project
-Static web app teaching structural engineering students to predict tension/compression in truss members using the Method of Joints. No framework, no build step. Opens via file:// or static HTTP server.
+Static web app teaching structural engineering students to predict tension/compression in truss members using the Method of Joints. No framework, no build step. Opens via `python -m http.server` (ES modules require HTTP, not file://).
 
 ## Current State
-Task 2 complete. getMemberAngle and getSolvableJoints implemented and committed.
+All features complete. Resizable layout implemented and committed.
 
 ## Done This Session
-- Created `index.html` — full HTML shell with all required sections (header, truss banner, workspace, ledger, summary dialog, replay overlay)
-- Created `style.css` — full stylesheet with CSS custom properties, responsive layout, print styles
-- Created `truss.js` — stub exports: getMemberAngle, getSolvableJoints, solveJoint, getEquationStrings
-- Created `fbd.js` — stub export: renderFBD
-- Created `ui.js` — imports from truss.js and fbd.js, no logic yet
-- Created `problems.json` — King-Post Truss problem with 4 joints, 5 members, 1 load, 2 reactions, solution order
-- Committed all 6 files (commit 6885193)
-- Implemented getMemberAngle and getSolvableJoints in truss.js; created test.html (commit 848e6eb)
+- Added resizable panel layout (Option B: overview top strip + workspace below)
+  - Overview strip (default 160px) contains truss SVG + ledger, resizable via horizontal drag handle
+  - Workspace fills remaining height: FBD panel (flex:1) + vertical drag handle + side panel (default 280px)
+  - Both handles use mousedown/mousemove/mouseup; sizes persisted to localStorage
+  - ResizeObserver triggers SVG redraws on panel resize (throttled via requestAnimationFrame)
+  - Bottom ledger bar removed; ledger items moved into overview strip
+- Design spec: `docs/superpowers/specs/2026-04-29-resizable-layout-design.md`
+- Implementation plan: `docs/superpowers/plans/2026-04-29-resizable-layout.md`
+- 4 commits: CSS → HTML → JS handles → JS observers
 
-## What Still Needs Doing (in order)
-1. ~~Task 2: Implement truss.js math (getMemberAngle, getSolvableJoints, solveJoint, getEquationStrings)~~ DONE (partial: getMemberAngle + getSolvableJoints)
-2. Task 3: Implement fbd.js SVG renderer
-3. Task 4: Implement ui.js — problem loading, joint selection, prediction UI, solve/verify, ledger, summary, replay
-4. Task 5: Add more problems to problems.json
-5. Task 6: Testing and polish
+## What Still Needs Doing
+Nothing known. All previously planned features complete:
+- Truss math (getMemberAngle, getSolvableJoints, solveJoint, getEquationStrings) ✓
+- FBD SVG renderer ✓
+- UI (problem loading, joint selection, prediction, solve/verify, ledger, summary, replay) ✓
+- Problems (King-Post, Warren, Cantilever) ✓
+- Resizable layout ✓
 
 ## Key Technical Decisions
-- `<script type="module">` is used — Chrome requires HTTP server for file:// protocol (CORS policy on ES modules). Firefox works with file:// in some versions. Users should run a local server (e.g., `python -m http.server`) for development.
-- Architecture: truss.js = pure math (no DOM), fbd.js = SVG rendering only, ui.js = all DOM/state
-- problems.json coordinates are unitless; joints use logical grid units (x=0..8, y=0..3 for king-post)
-- Sign convention: positive = tension (member pulls joint outward), negative = compression
+- `<script type="module">` — Chrome requires HTTP server, not file://
+- Architecture: truss.js = pure math, fbd.js = SVG only, ui.js = all DOM/state
+- Sign convention: positive = tension, negative = compression, |f| < 0.001 = zero
+- Drag handles: mousedown on handle → mousemove/mouseup on document (not handle), so drag works if mouse leaves handle
+- ResizeObserver uses requestAnimationFrame guard (single variable, not boolean flag) to skip redundant frames
+- `overviewSvg.parentElement` = `.overview-svg-wrap` (not `.truss-banner`); clientHeight read from wrap
+- Side panel width is dragged rightward to shrink (startW - delta), not leftward
 
 ## Gotchas
-- style.css uses Unicode box-drawing chars in comments (─, ──) — open with UTF-8 encoding
+- style.css uses Unicode box-drawing chars in comments — open with UTF-8 encoding
 - LF->CRLF line ending warnings on commit are benign (Windows git config)
+- localStorage keys: `truss-overview-h` (px int) and `truss-side-w` (px int)

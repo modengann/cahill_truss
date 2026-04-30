@@ -9,7 +9,13 @@
       "Bash(node --input-type=module)",
       "Bash(echo \"exit: $?\")",
       "Bash(node -e \"const d=require\\('./problems.json'\\); console.log\\('Valid JSON'\\); console.log\\('Problems:', d.length\\); d.forEach\\(p=>console.log\\(' -', p.name, '| joints:', p.joints.length, '| members:', p.members.length\\)\\)\")",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(python -m http.server 8081)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_evaluate"
     ]
   }
 }

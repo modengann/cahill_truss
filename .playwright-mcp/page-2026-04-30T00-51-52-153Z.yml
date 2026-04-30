@@ -1,0 +1,47 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]: Select problem
+      - combobox "Select problem" [ref=e5]:
+        - option "King-Post Truss" [selected]
+        - option "Warren Truss"
+        - option "Cantilever Truss"
+    - generic [ref=e6]:
+      - generic [ref=e7]: "+ Tension: member pulls joint outward"
+      - generic [ref=e8]: ·
+      - generic [ref=e9]: "− Compression: member pushes joint inward"
+    - generic [ref=e10]:
+      - button "Hint" [disabled] [ref=e11]
+      - button "Reset" [disabled] [ref=e12]
+  - region "Truss overview" [ref=e13]:
+    - generic [ref=e14]:
+      - img [ref=e16]:
+        - generic "Member AB"
+        - generic "Member BC"
+        - generic "Member BD"
+        - generic "Member AD" [ref=e17]
+        - generic "Member CD" [ref=e18]
+        - 'button "Joint A: click to solve" [ref=e19] [cursor=pointer]':
+          - generic: A
+        - 'generic "Joint B: locked — 3 unknowns remaining" [ref=e21]':
+          - generic: B
+        - 'button "Joint C: click to solve" [ref=e23] [cursor=pointer]':
+          - generic: C
+        - 'generic "Joint D: locked — 3 unknowns remaining" [ref=e25]':
+          - generic: D
+      - generic [ref=e27]:
+        - generic [ref=e28]: Ledger
+        - list [ref=e29]:
+          - listitem [ref=e30]: AB ?
+          - listitem [ref=e31]: BC ?
+          - listitem [ref=e32]: BD ?
+          - listitem [ref=e33]: AD ?
+          - listitem [ref=e34]: CD ?
+  - main [ref=e36]:
+    - region "Free body diagram" [ref=e37]:
+      - heading "Select a joint to begin" [level=2] [ref=e38]
+      - img "Free body diagram" [ref=e39]
+    - complementary "Member predictions" [ref=e42]:
+      - heading "Members at joint" [level=2] [ref=e43]
+      - list [ref=e44]
+      - button "Solve & Verify" [disabled] [ref=e45]
