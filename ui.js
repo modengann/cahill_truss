@@ -91,6 +91,41 @@ function initResizeHandles() {
   });
 }
 
+// ── Resize observers ───────────────────────────────────────────
+function initResizeObservers() {
+  let overviewRaf = null;
+  new ResizeObserver(() => {
+    if (overviewRaf) return;
+    overviewRaf = requestAnimationFrame(() => {
+      overviewRaf = null;
+      if (problem) renderOverview();
+    });
+  }).observe(bannerEl);
+
+  let fbdRaf = null;
+  new ResizeObserver(() => {
+    if (fbdRaf) return;
+    fbdRaf = requestAnimationFrame(() => {
+      fbdRaf = null;
+      if (activeJoint) {
+        renderFBD(activeJoint, problem, solvedForces, predictions[activeJoint] || {}, fbdSvg);
+      }
+    });
+  }).observe(fbdSvg);
+
+  const replayFbdSvg = document.getElementById('replay-fbd-svg');
+  let replayRaf = null;
+  new ResizeObserver(() => {
+    if (replayRaf) return;
+    replayRaf = requestAnimationFrame(() => {
+      replayRaf = null;
+      if (!document.getElementById('replay-screen').classList.contains('hidden')) {
+        renderReplayStep();
+      }
+    });
+  }).observe(replayFbdSvg);
+}
+
 // ── Boot ───────────────────────────────────────────────────────
 async function boot() {
   initResizeHandles();
@@ -105,6 +140,7 @@ async function boot() {
 
   selectEl.addEventListener('change', () => loadProblem(problems[+selectEl.value]));
   loadProblem(problems[0]);
+  initResizeObservers();
 }
 
 function loadProblem(p) {
@@ -133,8 +169,8 @@ function loadProblem(p) {
 function renderOverview() {
   while (overviewSvg.firstChild) overviewSvg.removeChild(overviewSvg.firstChild);
 
-  const W = overviewSvg.parentElement.clientWidth || 600;
-  const H = 120;
+  const W = overviewSvg.parentElement.clientWidth  || 600;
+  const H = overviewSvg.parentElement.clientHeight || OVERVIEW_DEFAULT_H;
   overviewSvg.setAttribute('viewBox', `0 0 ${W} ${H}`);
 
   const xs = problem.joints.map(j => j.x);
