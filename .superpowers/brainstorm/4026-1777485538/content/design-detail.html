@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layout Design — Option B Detail</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; padding: 24px; }
+  h1 { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .subtitle { font-size: 12px; color: #888; margin-bottom: 24px; }
+
+  .section { margin-bottom: 28px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #4a9eff; margin-bottom: 12px; }
+
+  /* ── Full-size app mockup ─────────────────────────── */
+  .app-wrap {
+    border: 2px solid #4a9eff;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f8f9fa;
+    font-family: system-ui, sans-serif;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .m-header {
+    background: #fff; border-bottom: 1px solid #dee2e6;
+    padding: 8px 16px; display: flex; align-items: center;
+    justify-content: space-between; gap: 8px; flex-shrink: 0;
+  }
+  .m-select { font-size: 12px; padding: 4px 8px; border: 1px solid #dee2e6; border-radius: 4px; background: #fff; color: #212529; }
+  .m-sign { font-size: 11px; display: flex; gap: 8px; }
+  .m-sign-t { color: #185FA5; font-weight: 600; }
+  .m-sign-c { color: #A32D2D; font-weight: 600; }
+  .m-btns { display: flex; gap: 6px; }
+  .m-btn { padding: 4px 10px; font-size: 11px; border-radius: 4px; border: 1px solid #dee2e6; background: #fff; color: #212529; cursor: default; }
+
+  /* Overview strip */
+  .m-overview {
+    background: #fff; border-bottom: none; padding: 8px 16px;
+    display: flex; align-items: stretch; gap: 12px;
+    height: 130px;
+  }
+  .m-overview-svg-wrap { flex: 1; display: flex; align-items: center; }
+  .m-overview-ledger { display: flex; flex-direction: column; justify-content: center; gap: 3px; flex-shrink: 0; padding-left: 8px; border-left: 1px solid #dee2e6; }
+  .m-ledger-label { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #6c757d; margin-bottom: 4px; }
+  .m-ledger-row { display: flex; flex-wrap: wrap; gap: 3px; }
+  .litem { font-family: monospace; font-size: 10px; padding: 2px 6px; border: 1px solid #dee2e6; border-radius: 3px; background: #f8f9fa; color: #adb5bd; }
+  .litem.t { color: #185FA5; border-color: #185FA5; background: #e7f0fb; font-weight: 700; }
+  .litem.c { color: #A32D2D; border-color: #A32D2D; background: #fde8e8; font-weight: 700; }
+
+  /* Drag handles */
+  .handle-h {
+    height: 6px; background: #e9ecef;
+    cursor: row-resize; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border-top: 1px solid #dee2e6; border-bottom: 1px solid #dee2e6;
+    position: relative;
+  }
+  .handle-h-dots { display: flex; gap: 3px; }
+  .handle-h-dots span { width: 16px; height: 2px; background: #adb5bd; border-radius: 1px; }
+  .handle-v {
+    width: 6px; background: #e9ecef;
+    cursor: col-resize; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border-left: 1px solid #dee2e6; border-right: 1px solid #dee2e6;
+  }
+  .handle-v-dots { display: flex; flex-direction: column; gap: 3px; }
+  .handle-v-dots span { width: 2px; height: 16px; background: #adb5bd; border-radius: 1px; }
+
+  /* Workspace */
+  .m-workspace { display: flex; background: #fff; height: 260px; }
+  .m-fbd-panel { flex: 1; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; border-right: none; }
+  .m-side-panel { width: 240px; flex-shrink: 0; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+  .panel-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #6c757d; }
+
+  .m-eq { font-family: monospace; font-size: 11px; color: #495057; line-height: 1.8;
+    padding: 8px 10px; background: #f8f9fa; border-radius: 4px; border: 1px solid #dee2e6;
+    flex-shrink: 0; }
+
+  .m-member-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 8px; border: 1px solid #dee2e6; border-radius: 5px;
+    background: #f8f9fa; gap: 6px;
+  }
+  .m-member-row.correct { border-color: #28a745; background: #d1e7dd; }
+  .m-member-row.wrong   { border-color: #A32D2D; background: #f8d7da; }
+  .m-mname { font-weight: 700; font-size: 12px; min-width: 24px; color: #212529; }
+  .m-pred { display: flex; gap: 3px; }
+  .m-pred button { padding: 2px 7px; font-size: 10px; font-weight: 700; border-radius: 3px; border: 1px solid #dee2e6; background: #fff; color: #212529; cursor: default; }
+  .m-pred button.t { background: #185FA5; color: #fff; border-color: #185FA5; }
+  .m-pred button.c { background: #A32D2D; color: #fff; border-color: #A32D2D; }
+  .m-badge { font-family: monospace; font-size: 10px; color: #6c757d; min-width: 52px; text-align: right; }
+  .m-badge.t { color: #185FA5; font-weight: 700; }
+  .m-badge.c { color: #A32D2D; font-weight: 700; }
+
+  .m-solve-btn {
+    width: 100%; padding: 8px; background: #185FA5; color: #fff;
+    border: none; border-radius: 4px; font-size: 12px; font-weight: 600;
+    margin-top: 4px; cursor: default;
+  }
+  .m-feedback {
+    font-size: 11px; line-height: 1.5; padding: 8px 10px; border-radius: 4px;
+    border-left: 4px solid #28a745; background: #d1e7dd; color: #0f5132;
+  }
+
+  /* Annotation callouts */
+  .annotations { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .annotation {
+    background: #1e1e35; border: 1px solid #333; border-radius: 6px;
+    padding: 12px 14px;
+  }
+  .ann-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #4a9eff; margin-bottom: 5px; }
+  .ann-text { font-size: 12px; color: #ccc; line-height: 1.5; }
+  .ann-detail { font-size: 11px; color: #888; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<h1>Design — Option B: Overview Top + Split Below</h1>
+<p class="subtitle">Click anywhere on the mockup to approve. Details below.</p>
+
+<div class="section">
+  <div class="section-title">Full-Screen Mockup</div>
+  <div class="app-wrap" data-choice="approve" onclick="approve(this)" style="cursor:pointer;" title="Click to approve">
+
+    <!-- Header -->
+    <div class="m-header">
+      <select class="m-select"><option>King-Post Truss ▾</option></select>
+      <div class="m-sign"><span class="m-sign-t">+ Tension: member pulls joint outward</span><span style="color:#adb5bd">·</span><span class="m-sign-c">− Compression: member pushes joint inward</span></div>
+      <div class="m-btns"><button class="m-btn">Hint</button><button class="m-btn">Reset</button></div>
+    </div>
+
+    <!-- Overview strip -->
+    <div class="m-overview">
+      <div class="m-overview-svg-wrap">
+        <svg viewBox="-15 -18 110 75" style="width:100%;height:110px;" preserveAspectRatio="xMidYMid meet">
+          <!-- members -->
+          <line x1="0" y1="45" x2="40" y2="45" stroke="#adb5bd" stroke-width="2.5"/>
+          <line x1="40" y1="45" x2="80" y2="45" stroke="#185FA5" stroke-width="2.5"/>
+          <line x1="40" y1="45" x2="40" y2="10" stroke="#A32D2D" stroke-width="2.5"/>
+          <line x1="0"  y1="45" x2="40" y2="10" stroke="#185FA5" stroke-width="2.5"/>
+          <line x1="80" y1="45" x2="40" y2="10" stroke="#185FA5" stroke-width="2.5"/>
+          <!-- support symbols -->
+          <polygon points="0,45 -6,55 6,55" fill="none" stroke="#212529" stroke-width="1.5"/>
+          <line x1="-8" y1="56" x2="8" y2="56" stroke="#212529" stroke-width="1.5"/>
+          <circle cx="80" cy="54" r="4.5" fill="none" stroke="#212529" stroke-width="1.5"/>
+          <line x1="72" y1="59" x2="88" y2="59" stroke="#212529" stroke-width="1.5"/>
+          <!-- load arrow at D -->
+          <defs><marker id="ld" markerWidth="7" markerHeight="7" refX="3.5" refY="6" orient="auto"><path d="M0,0 L3.5,7 L7,0Z" fill="#dc3545"/></marker></defs>
+          <line x1="40" y1="-12" x2="40" y2="3" stroke="#dc3545" stroke-width="1.5" marker-end="url(#ld)"/>
+          <text x="44" y="-4" font-size="8" fill="#dc3545">12 kN</text>
+          <!-- joints -->
+          <circle cx="0"  cy="45" r="7" fill="#0d3d6e"/><text x="0"  y="46" text-anchor="middle" dominant-baseline="middle" font-size="7" fill="white" font-weight="bold">A</text>
+          <circle cx="40" cy="45" r="7" fill="#28a745" stroke="#1a7335" stroke-width="1.5"/><text x="40" y="46" text-anchor="middle" dominant-baseline="middle" font-size="7" fill="white" font-weight="bold">B</text>
+          <circle cx="80" cy="45" r="7" fill="#0d3d6e"/><text x="80" y="46" text-anchor="middle" dominant-baseline="middle" font-size="7" fill="white" font-weight="bold">C</text>
+          <circle cx="40" cy="10" r="7" fill="#185FA5" stroke="#1250a0" stroke-width="1.5"/><text x="40" y="11" text-anchor="middle" dominant-baseline="middle" font-size="7" fill="white" font-weight="bold">D</text>
+          <!-- check marks on solved joints -->
+          <text x="8" y="38" font-size="8" fill="#28a745">✓</text>
+          <text x="88" y="38" font-size="8" fill="#28a745">✓</text>
+        </svg>
+      </div>
+      <div class="m-overview-ledger">
+        <div class="m-ledger-label">Ledger</div>
+        <div class="m-ledger-row">
+          <span class="litem t">AB +10.0 kN T</span>
+          <span class="litem c">BC −8.0 kN C</span>
+          <span class="litem">BD ?</span>
+          <span class="litem">AD ?</span>
+          <span class="litem">CD ?</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Horizontal drag handle -->
+    <div class="handle-h">
+      <div class="handle-h-dots"><span></span><span></span><span></span></div>
+    </div>
+
+    <!-- Workspace -->
+    <div class="m-workspace">
+      <!-- FBD panel -->
+      <div class="m-fbd-panel">
+        <div class="panel-title">Free Body Diagram — Joint B</div>
+        <div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#fdfdfd;border:1px solid #f0f0f0;border-radius:4px;">
+          <svg viewBox="0 0 200 170" style="width:100%;height:100%;max-height:180px;" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <marker id="m1" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7Z" fill="#adb5bd"/></marker>
+              <marker id="m2" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7Z" fill="#185FA5"/></marker>
+              <marker id="m3" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7Z" fill="#A32D2D"/></marker>
+            </defs>
+            <line x1="100" y1="85" x2="22"  y2="85"  stroke="#adb5bd" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#m1)"/>
+            <text x="55"  y="78" font-size="10" fill="#adb5bd" text-anchor="middle">AB ?</text>
+            <line x1="100" y1="85" x2="178" y2="85"  stroke="#185FA5" stroke-width="2" marker-end="url(#m2)"/>
+            <text x="143" y="78" font-size="10" fill="#185FA5" text-anchor="middle">BC T</text>
+            <line x1="100" y1="85" x2="100" y2="18"  stroke="#A32D2D" stroke-width="2" marker-end="url(#m3)"/>
+            <text x="116" y="50" font-size="10" fill="#A32D2D">BD C</text>
+            <circle cx="100" cy="85" r="12" fill="#e7f0fb" stroke="#185FA5" stroke-width="2"/>
+            <text x="100" y="86" text-anchor="middle" dominant-baseline="middle" font-size="11" font-weight="bold" fill="#185FA5">B</text>
+          </svg>
+        </div>
+        <div class="m-eq">ΣFx = F_AB·(-1.0) F_BC·(+1.0) = 0<br>ΣFy = F_BD·(+1.0) = 0</div>
+      </div>
+
+      <!-- Vertical drag handle -->
+      <div class="handle-v">
+        <div class="handle-v-dots"><span></span><span></span><span></span></div>
+      </div>
+
+      <!-- Side panel -->
+      <div class="m-side-panel">
+        <div class="panel-title">Members at Joint B</div>
+        <div class="m-member-row">
+          <span class="m-mname">AB</span>
+          <div class="m-pred"><button class="t">T (+)</button><button>C (−)</button></div>
+          <span class="m-badge t">?</span>
+        </div>
+        <div class="m-member-row wrong">
+          <span class="m-mname">BC</span>
+          <div class="m-pred"><button class="t">T (+)</button><button>C (−)</button></div>
+          <span class="m-badge c">−8.0 kN</span>
+        </div>
+        <div class="m-member-row correct">
+          <span class="m-mname">BD</span>
+          <div class="m-pred"><button>T (+)</button><button class="c">C (−)</button></div>
+          <span class="m-badge">?</span>
+        </div>
+        <button class="m-solve-btn">Solve &amp; Verify</button>
+        <div class="m-feedback">Joint A solved — values added to ledger.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Annotations -->
+<div class="section">
+  <div class="section-title">Resize Behavior</div>
+  <div class="annotations">
+    <div class="annotation">
+      <div class="ann-tag">Horizontal handle</div>
+      <div class="ann-text">Drag between overview and workspace to change overview height.</div>
+      <div class="ann-detail">Default: 160px. Min: 80px. Max: 45% of viewport. SVG rescales via viewBox.</div>
+    </div>
+    <div class="annotation">
+      <div class="ann-tag">Vertical handle</div>
+      <div class="ann-text">Drag between FBD panel and side panel to change their widths.</div>
+      <div class="ann-detail">Default: FBD fills remaining space, side panel 280px. Min side panel: 200px.</div>
+    </div>
+    <div class="annotation">
+      <div class="ann-tag">Dynamic SVGs</div>
+      <div class="ann-text">Overview truss and FBD redraw as panels resize — no clipping, no fixed pixel sizes.</div>
+      <div class="ann-detail">ResizeObserver triggers re-render on panel dimension changes.</div>
+    </div>
+    <div class="annotation">
+      <div class="ann-tag">Ledger in overview</div>
+      <div class="ann-text">Ledger items sit to the right of the truss SVG, scrollable if they overflow.</div>
+      <div class="ann-detail">Replaces the current bottom ledger strip entirely.</div>
+    </div>
+  </div>
+</div>
+
+<div id="approved-msg" style="display:none;margin-top:16px;padding:14px 18px;background:#1a3a2a;border:1px solid #28a745;border-radius:6px;color:#6fcf97;font-weight:600;font-size:13px;">
+  Design approved. Tell me in the terminal to proceed.
+</div>
+
+<script>
+function approve(el) {
+  document.getElementById('approved-msg').style.display = 'block';
+  el.style.borderColor = '#28a745';
+  el.style.boxShadow = '0 0 0 3px rgba(40,167,69,0.25)';
+  fetch('/select', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({choice: 'approve', text: 'Design approved'})
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>

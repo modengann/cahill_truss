@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layout Options</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    padding: 24px;
+  }
+  h1 { font-size: 20px; font-weight: 700; margin-bottom: 6px; color: #fff; }
+  .subtitle { font-size: 13px; color: #aaa; margin-bottom: 28px; }
+
+  .options-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+  .option-card {
+    border: 2px solid #333;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+    background: #12121f;
+  }
+  .option-card:hover { border-color: #4a9eff; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+  .option-card.selected { border-color: #4a9eff; box-shadow: 0 0 0 3px rgba(74,158,255,0.25); }
+
+  .option-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px;
+    background: #1e1e35;
+    border-bottom: 1px solid #333;
+  }
+  .option-letter {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #4a9eff; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 13px; flex-shrink: 0;
+  }
+  .option-card.selected .option-letter { background: #4a9eff; }
+  .option-title { font-weight: 700; font-size: 14px; color: #fff; }
+  .option-desc { font-size: 11px; color: #888; padding: 10px 16px 14px; line-height: 1.5; }
+
+  /* ─── App mockup shell ─────────────────────────────────── */
+  .app-mock {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    font-family: system-ui, sans-serif;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Header */
+  .m-header {
+    background: #fff;
+    border-bottom: 1px solid #dee2e6;
+    padding: 7px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    gap: 6px;
+  }
+  .m-select {
+    font-size: 10px; padding: 3px 6px;
+    border: 1px solid #dee2e6; border-radius: 3px;
+    background: #fff; color: #212529;
+  }
+  .m-sign {
+    font-size: 9px; display: flex; gap: 6px;
+  }
+  .m-sign-t { color: #185FA5; font-weight: 600; }
+  .m-sign-c { color: #A32D2D; font-weight: 600; }
+  .m-btns { display: flex; gap: 4px; }
+  .m-btn {
+    padding: 3px 8px; font-size: 10px; border-radius: 3px;
+    border: 1px solid #dee2e6; background: #fff; cursor: default;
+    color: #212529;
+  }
+  .m-btn.primary { background: #185FA5; color: #fff; border-color: #185FA5; }
+
+  /* Resize handle visuals */
+  .m-handle-v {
+    width: 5px; background: #dee2e6; cursor: col-resize; flex-shrink: 0;
+    position: relative; transition: background 0.1s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .m-handle-v::after {
+    content: '⋮'; font-size: 10px; color: #aaa; position: absolute;
+  }
+  .m-handle-h {
+    height: 5px; background: #dee2e6; cursor: row-resize; flex-shrink: 0;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .m-handle-h::after {
+    content: '···'; font-size: 8px; color: #aaa; position: absolute; letter-spacing: 1px;
+  }
+  .option-card:hover .m-handle-v,
+  .option-card:hover .m-handle-h { background: #4a9eff; opacity: 0.5; }
+
+  /* Panel */
+  .m-panel {
+    background: #fff;
+    border: none;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    min-width: 0; min-height: 0;
+  }
+  .m-panel-title {
+    font-size: 8px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; color: #6c757d; margin-bottom: 6px; flex-shrink: 0;
+  }
+
+  /* Truss SVG pane */
+  .m-truss-pane { background: #fff; padding: 8px; overflow: hidden; }
+
+  /* FBD placeholder */
+  .m-fbd-circle {
+    width: 60px; height: 60px; border-radius: 50%;
+    border: 2px solid #dee2e6;
+    background: #f8f9fa;
+    position: relative;
+    margin: auto;
+    flex-shrink: 0;
+  }
+
+  /* Member rows */
+  .m-member-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 6px; border: 1px solid #dee2e6; border-radius: 4px;
+    background: #f8f9fa; margin-bottom: 3px; font-size: 9px;
+  }
+  .m-member-name { font-weight: 700; color: #212529; }
+  .m-pred-btns { display: flex; gap: 2px; }
+  .m-pred-btn {
+    padding: 1px 5px; font-size: 8px; font-weight: 700; border-radius: 2px;
+    border: 1px solid #dee2e6; background: #fff; color: #212529;
+  }
+  .m-pred-btn.t { background: #185FA5; color: #fff; border-color: #185FA5; }
+  .m-pred-btn.c { background: #A32D2D; color: #fff; border-color: #A32D2D; }
+
+  /* Ledger items */
+  .m-ledger {
+    display: flex; flex-wrap: wrap; gap: 3px; padding: 6px 8px;
+    background: #fff; border-top: 1px solid #dee2e6; flex-shrink: 0;
+  }
+  .m-ledger-item {
+    font-family: monospace; font-size: 9px; padding: 2px 5px;
+    border: 1px solid #dee2e6; border-radius: 3px; background: #f8f9fa; color: #adb5bd;
+  }
+  .m-ledger-item.t { color: #185FA5; border-color: #185FA5; background: #e7f0fb; font-weight: 700; }
+  .m-ledger-item.c { color: #A32D2D; border-color: #A32D2D; background: #fde8e8; font-weight: 700; }
+
+  /* Equations */
+  .m-eq { font-family: monospace; font-size: 8px; color: #495057; line-height: 1.7;
+    padding: 5px 6px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 3px; }
+
+  /* ─── Selected indicator ──────────────────────────────── */
+  .sel-bar {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: #4a9eff; color: #fff; padding: 10px 20px; border-radius: 24px;
+    font-size: 13px; font-weight: 600; box-shadow: 0 4px 16px rgba(74,158,255,0.4);
+    display: none; pointer-events: none;
+  }
+  .sel-bar.visible { display: block; }
+</style>
+</head>
+<body>
+
+<h1>Layout Options</h1>
+<p class="subtitle">Three resizable layouts — click one to select. All use the same colors and components as the real app.</p>
+
+<div class="options-row">
+
+  <!-- ══ OPTION A: Three-Column ══ -->
+  <div class="option-card" data-choice="a" onclick="pick(this)">
+    <div class="option-header">
+      <div class="option-letter">A</div>
+      <div class="option-title">Three-Column</div>
+    </div>
+
+    <div class="app-mock">
+      <!-- Header -->
+      <div class="m-header">
+        <select class="m-select"><option>King-Post Truss</option></select>
+        <div class="m-sign"><span class="m-sign-t">+ Tension</span><span style="color:#adb5bd">·</span><span class="m-sign-c">− Compression</span></div>
+        <div class="m-btns"><button class="m-btn">Hint</button><button class="m-btn">Reset</button></div>
+      </div>
+      <!-- Three columns -->
+      <div style="display:flex; flex:1; min-height:0;">
+        <!-- Col 1: Truss Overview -->
+        <div class="m-panel" style="flex:1.1; border-right:1px solid #dee2e6; padding:8px;">
+          <div class="m-panel-title">Truss Overview</div>
+          <svg viewBox="-10 -10 100 80" style="width:100%;flex:1;min-height:0;" preserveAspectRatio="xMidYMid meet">
+            <!-- Members -->
+            <line x1="0" y1="60" x2="40" y2="60" stroke="#adb5bd" stroke-width="2"/>
+            <line x1="40" y1="60" x2="80" y2="60" stroke="#185FA5" stroke-width="2"/>
+            <line x1="40" y1="60" x2="40" y2="30" stroke="#A32D2D" stroke-width="2"/>
+            <line x1="0"  y1="60" x2="40" y2="30" stroke="#185FA5" stroke-width="2"/>
+            <line x1="80" y1="60" x2="40" y2="30" stroke="#185FA5" stroke-width="2"/>
+            <!-- Joints -->
+            <circle cx="0"  cy="60" r="6" fill="#0d3d6e" stroke="#0d3d6e"/>
+            <text x="0" y="61" text-anchor="middle" dominant-baseline="middle" font-size="6" fill="white" font-weight="bold">A</text>
+            <circle cx="40" cy="60" r="6" fill="#28a745" stroke="#1a7335"/>
+            <text x="40" y="61" text-anchor="middle" dominant-baseline="middle" font-size="6" fill="white" font-weight="bold">B</text>
+            <circle cx="80" cy="60" r="6" fill="#0d3d6e" stroke="#0d3d6e"/>
+            <text x="80" y="61" text-anchor="middle" dominant-baseline="middle" font-size="6" fill="white" font-weight="bold">C</text>
+            <circle cx="40" cy="30" r="6" fill="#185FA5" stroke="#1250a0"/>
+            <text x="40" y="31" text-anchor="middle" dominant-baseline="middle" font-size="6" fill="white" font-weight="bold">D</text>
+          </svg>
+        </div>
+        <div class="m-handle-v"></div>
+        <!-- Col 2: FBD + Equations -->
+        <div class="m-panel" style="flex:1.6; border-right:1px solid #dee2e6;">
+          <div class="m-panel-title">Free Body Diagram — Joint B</div>
+          <div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;">
+            <svg viewBox="0 0 120 100" style="width:90%;max-height:100px;" preserveAspectRatio="xMidYMid meet">
+              <!-- Arrows outward -->
+              <defs>
+                <marker id="a1" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6Z" fill="#adb5bd"/></marker>
+                <marker id="a2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6Z" fill="#185FA5"/></marker>
+                <marker id="a3" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6Z" fill="#A32D2D"/></marker>
+                <marker id="a4" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6Z" fill="#28a745"/></marker>
+              </defs>
+              <!-- Unknown member AB -->
+              <line x1="60" y1="50" x2="20" y2="50" stroke="#adb5bd" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#a1)"/>
+              <text x="35" y="45" font-size="7" fill="#adb5bd">AB ?</text>
+              <!-- Unknown member BC (tension - blue) -->
+              <line x1="60" y1="50" x2="100" y2="50" stroke="#185FA5" stroke-width="1.5" marker-end="url(#a2)"/>
+              <text x="83" y="45" font-size="7" fill="#185FA5">BC T</text>
+              <!-- BD (compression - red) -->
+              <line x1="60" y1="50" x2="60" y2="18" stroke="#A32D2D" stroke-width="1.5" marker-end="url(#a3)"/>
+              <text x="64" y="32" font-size="7" fill="#A32D2D">BD C</text>
+              <!-- Joint circle -->
+              <circle cx="60" cy="50" r="8" fill="#e7f0fb" stroke="#185FA5" stroke-width="1.5"/>
+              <text x="60" y="51" text-anchor="middle" dominant-baseline="middle" font-size="7" font-weight="bold" fill="#185FA5">B</text>
+            </svg>
+          </div>
+          <div class="m-eq">ΣFx = +0 F_AB·(-1) F_BC·(+1) = 0<br>ΣFy = F_BD·(+1) = 0</div>
+        </div>
+        <div class="m-handle-v"></div>
+        <!-- Col 3: Members + Ledger -->
+        <div class="m-panel" style="flex:1; overflow-y:auto;">
+          <div class="m-panel-title">Members at Joint B</div>
+          <div class="m-member-row">
+            <span class="m-member-name">AB</span>
+            <div class="m-pred-btns"><button class="m-pred-btn t">T</button><button class="m-pred-btn">C</button></div>
+          </div>
+          <div class="m-member-row">
+            <span class="m-member-name">BC</span>
+            <div class="m-pred-btns"><button class="m-pred-btn">T</button><button class="m-pred-btn c">C</button></div>
+          </div>
+          <div class="m-member-row">
+            <span class="m-member-name">BD</span>
+            <div class="m-pred-btns"><button class="m-pred-btn">T</button><button class="m-pred-btn">C</button></div>
+          </div>
+          <button style="width:100%;margin-top:6px;padding:6px;background:#185FA5;color:#fff;border:none;border-radius:3px;font-size:10px;font-weight:600;cursor:default;">Solve &amp; Verify</button>
+          <div style="height:1px;background:#dee2e6;margin:8px 0;"></div>
+          <div class="m-panel-title">Ledger</div>
+          <div style="display:flex;flex-wrap:wrap;gap:3px;">
+            <span class="m-ledger-item t">AB +10 T</span>
+            <span class="m-ledger-item c">BC −8 C</span>
+            <span class="m-ledger-item">BD ?</span>
+            <span class="m-ledger-item">AD ?</span>
+            <span class="m-ledger-item">CD ?</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="option-desc">All panels side by side. Overview always visible on left. Drag handles between all three columns. Best on wide screens.</div>
+  </div>
+
+  <!-- ══ OPTION B: Overview Top + Workspace Below ══ -->
+  <div class="option-card" data-choice="b" onclick="pick(this)">
+    <div class="option-header">
+      <div class="option-letter">B</div>
+      <div class="option-title">Overview Top + Split Below</div>
+    </div>
+
+    <div class="app-mock">
+      <!-- Header -->
+      <div class="m-header">
+        <select class="m-select"><option>King-Post Truss</option></select>
+        <div class="m-sign"><span class="m-sign-t">+ Tension</span><span style="color:#adb5bd">·</span><span class="m-sign-c">− Compression</span></div>
+        <div class="m-btns"><button class="m-btn">Hint</button><button class="m-btn">Reset</button></div>
+      </div>
+      <!-- Overview row -->
+      <div style="background:#fff;border-bottom:1px solid #dee2e6;padding:6px 12px;flex-shrink:0;height:72px;display:flex;align-items:center;">
+        <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#6c757d;margin-right:10px;flex-shrink:0;">Overview</div>
+        <svg viewBox="-5 -8 90 55" style="height:52px;flex:1;" preserveAspectRatio="xMidYMid meet">
+          <line x1="0" y1="36" x2="40" y2="36" stroke="#adb5bd" stroke-width="2"/>
+          <line x1="40" y1="36" x2="80" y2="36" stroke="#185FA5" stroke-width="2"/>
+          <line x1="40" y1="36" x2="40" y2="8"  stroke="#A32D2D" stroke-width="2"/>
+          <line x1="0"  y1="36" x2="40" y2="8"  stroke="#185FA5" stroke-width="2"/>
+          <line x1="80" y1="36" x2="40" y2="8"  stroke="#185FA5" stroke-width="2"/>
+          <circle cx="0"  cy="36" r="6" fill="#0d3d6e"/><text x="0"  y="37" text-anchor="middle" dominant-baseline="middle" font-size="6" fill="white" font-weight="bold">A</text>
+          <circle cx="40" cy="36" r="6" fill="#28a745" stroke="#1a7335"/><text x="40" y="37" text-anchor="middle" dominant-baseline="middle" font-size="6" fill="white" font-weight="bold">B</text>
+          <circle cx="80" cy="36" r="6" fill="#0d3d6e"/><text x="80" y="37" text-anchor="middle" dominant-baseline="middle" font-size="6" fill="white" font-weight="bold">C</text>
+          <circle cx="40" cy="8"  r="6" fill="#185FA5" stroke="#1250a0"/><text x="40" y="9" text-anchor="middle" dominant-baseline="middle" font-size="6" fill="white" font-weight="bold">D</text>
+        </svg>
+        <div style="display:flex;flex-wrap:wrap;gap:3px;margin-left:10px;flex-shrink:0;max-width:90px;">
+          <span class="m-ledger-item t">AB +10</span>
+          <span class="m-ledger-item c">BC −8</span>
+          <span class="m-ledger-item">BD ?</span>
+          <span class="m-ledger-item">AD ?</span>
+          <span class="m-ledger-item">CD ?</span>
+        </div>
+      </div>
+      <div class="m-handle-h"></div>
+      <!-- Bottom: FBD + side panel -->
+      <div style="display:flex;flex:1;min-height:0;">
+        <div class="m-panel" style="flex:1.6;border-right:1px solid #dee2e6;">
+          <div class="m-panel-title">Free Body Diagram — Joint B</div>
+          <div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;">
+            <svg viewBox="0 0 120 100" style="width:85%;max-height:90px;" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <marker id="b1" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6Z" fill="#adb5bd"/></marker>
+                <marker id="b2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6Z" fill="#185FA5"/></marker>
+                <marker id="b3" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6Z" fill="#A32D2D"/></marker>
+              </defs>
+              <line x1="60" y1="50" x2="20" y2="50" stroke="#adb5bd" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#b1)"/>
+              <text x="35" y="45" font-size="7" fill="#adb5bd">AB ?</text>
+              <line x1="60" y1="50" x2="100" y2="50" stroke="#185FA5" stroke-width="1.5" marker-end="url(#b2)"/>
+              <text x="83" y="45" font-size="7" fill="#185FA5">BC T</text>
+              <line x1="60" y1="50" x2="60" y2="18" stroke="#A32D2D" stroke-width="1.5" marker-end="url(#b3)"/>
+              <text x="64" y="32" font-size="7" fill="#A32D2D">BD C</text>
+              <circle cx="60" cy="50" r="8" fill="#e7f0fb" stroke="#185FA5" stroke-width="1.5"/>
+              <text x="60" y="51" text-anchor="middle" dominant-baseline="middle" font-size="7" font-weight="bold" fill="#185FA5">B</text>
+            </svg>
+          </div>
+          <div class="m-eq">ΣFx = F_AB·(-1) F_BC·(+1) = 0<br>ΣFy = F_BD·(+1) = 0</div>
+        </div>
+        <div class="m-handle-v"></div>
+        <div class="m-panel" style="flex:1;overflow-y:auto;">
+          <div class="m-panel-title">Members at Joint B</div>
+          <div class="m-member-row"><span class="m-member-name">AB</span><div class="m-pred-btns"><button class="m-pred-btn t">T</button><button class="m-pred-btn">C</button></div></div>
+          <div class="m-member-row"><span class="m-member-name">BC</span><div class="m-pred-btns"><button class="m-pred-btn">T</button><button class="m-pred-btn c">C</button></div></div>
+          <div class="m-member-row"><span class="m-member-name">BD</span><div class="m-pred-btns"><button class="m-pred-btn">T</button><button class="m-pred-btn">C</button></div></div>
+          <button style="width:100%;margin-top:6px;padding:6px;background:#185FA5;color:#fff;border:none;border-radius:3px;font-size:10px;font-weight:600;">Solve &amp; Verify</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="option-desc">Overview + ledger in a resizable top strip. FBD and members side-by-side below with a vertical drag handle. Most similar to current layout — just better proportioned.</div>
+  </div>
+
+  <!-- ══ OPTION C: FBD Center Stage ══ -->
+  <div class="option-card" data-choice="c" onclick="pick(this)">
+    <div class="option-header">
+      <div class="option-letter">C</div>
+      <div class="option-title">FBD Center Stage</div>
+    </div>
+
+    <div class="app-mock">
+      <!-- Header -->
+      <div class="m-header">
+        <select class="m-select"><option>King-Post Truss</option></select>
+        <div class="m-sign"><span class="m-sign-t">+ Tension</span><span style="color:#adb5bd">·</span><span class="m-sign-c">− Compression</span></div>
+        <div class="m-btns"><button class="m-btn">Hint</button><button class="m-btn">Reset</button></div>
+      </div>
+      <!-- Main body -->
+      <div style="display:flex;flex:1;min-height:0;">
+        <!-- Left: Overview + ledger stacked -->
+        <div style="width:110px;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid #dee2e6;background:#fff;">
+          <div style="padding:6px 8px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#6c757d;flex-shrink:0;">Overview</div>
+          <div style="flex:1;min-height:0;padding:0 8px;display:flex;align-items:center;">
+            <svg viewBox="-8 -5 96 55" style="width:100%;" preserveAspectRatio="xMidYMid meet">
+              <line x1="0" y1="40" x2="40" y2="40" stroke="#adb5bd" stroke-width="2.5"/>
+              <line x1="40" y1="40" x2="80" y2="40" stroke="#185FA5" stroke-width="2.5"/>
+              <line x1="40" y1="40" x2="40" y2="8"  stroke="#A32D2D" stroke-width="2.5"/>
+              <line x1="0"  y1="40" x2="40" y2="8"  stroke="#185FA5" stroke-width="2.5"/>
+              <line x1="80" y1="40" x2="40" y2="8"  stroke="#185FA5" stroke-width="2.5"/>
+              <circle cx="0"  cy="40" r="7" fill="#0d3d6e"/><text x="0"  y="41" text-anchor="middle" dominant-baseline="middle" font-size="7" fill="white" font-weight="bold">A</text>
+              <circle cx="40" cy="40" r="7" fill="#28a745" stroke="#1a7335"/><text x="40" y="41" text-anchor="middle" dominant-baseline="middle" font-size="7" fill="white" font-weight="bold">B</text>
+              <circle cx="80" cy="40" r="7" fill="#0d3d6e"/><text x="80" y="41" text-anchor="middle" dominant-baseline="middle" font-size="7" fill="white" font-weight="bold">C</text>
+              <circle cx="40" cy="8"  r="7" fill="#185FA5" stroke="#1250a0"/><text x="40" y="9" text-anchor="middle" dominant-baseline="middle" font-size="7" fill="white" font-weight="bold">D</text>
+            </svg>
+          </div>
+          <div style="height:1px;background:#dee2e6;flex-shrink:0;"></div>
+          <div style="padding:6px 8px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#6c757d;flex-shrink:0;">Ledger</div>
+          <div style="padding:0 8px 8px;display:flex;flex-direction:column;gap:2px;">
+            <span class="m-ledger-item t">AB +10 T</span>
+            <span class="m-ledger-item c">BC −8 C</span>
+            <span class="m-ledger-item">BD ?</span>
+            <span class="m-ledger-item">AD ?</span>
+            <span class="m-ledger-item">CD ?</span>
+          </div>
+        </div>
+        <div class="m-handle-v"></div>
+        <!-- Center: FBD (big) -->
+        <div class="m-panel" style="flex:1;border-right:1px solid #dee2e6;">
+          <div class="m-panel-title">Free Body Diagram — Joint B</div>
+          <div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;">
+            <svg viewBox="0 0 140 120" style="width:100%;max-height:130px;" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <marker id="c1" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7Z" fill="#adb5bd"/></marker>
+                <marker id="c2" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7Z" fill="#185FA5"/></marker>
+                <marker id="c3" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7Z" fill="#A32D2D"/></marker>
+              </defs>
+              <line x1="70" y1="60" x2="15" y2="60" stroke="#adb5bd" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#c1)"/>
+              <text x="38" y="54" font-size="8" fill="#adb5bd" text-anchor="middle">AB ?</text>
+              <line x1="70" y1="60" x2="125" y2="60" stroke="#185FA5" stroke-width="1.8" marker-end="url(#c2)"/>
+              <text x="100" y="54" font-size="8" fill="#185FA5" text-anchor="middle">BC T</text>
+              <line x1="70" y1="60" x2="70" y2="12" stroke="#A32D2D" stroke-width="1.8" marker-end="url(#c3)"/>
+              <text x="84" y="36" font-size="8" fill="#A32D2D">BD C</text>
+              <circle cx="70" cy="60" r="10" fill="#e7f0fb" stroke="#185FA5" stroke-width="2"/>
+              <text x="70" y="61" text-anchor="middle" dominant-baseline="middle" font-size="9" font-weight="bold" fill="#185FA5">B</text>
+            </svg>
+          </div>
+          <div class="m-eq">ΣFx = F_AB·(-1.0) F_BC·(+1.0) = 0<br>ΣFy = F_BD·(+1.0) = 0</div>
+        </div>
+        <div class="m-handle-v"></div>
+        <!-- Right: Members -->
+        <div class="m-panel" style="width:130px;flex-shrink:0;">
+          <div class="m-panel-title">Members at B</div>
+          <div class="m-member-row"><span class="m-member-name">AB</span><div class="m-pred-btns"><button class="m-pred-btn t">T</button><button class="m-pred-btn">C</button></div></div>
+          <div class="m-member-row"><span class="m-member-name">BC</span><div class="m-pred-btns"><button class="m-pred-btn">T</button><button class="m-pred-btn c">C</button></div></div>
+          <div class="m-member-row"><span class="m-member-name">BD</span><div class="m-pred-btns"><button class="m-pred-btn">T</button><button class="m-pred-btn">C</button></div></div>
+          <button style="width:100%;margin-top:8px;padding:7px;background:#185FA5;color:#fff;border:none;border-radius:3px;font-size:10px;font-weight:600;">Solve &amp; Verify</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="option-desc">Overview + ledger as a fixed left sidebar. FBD gets the most space in the center. Members panel on the right. All column widths draggable.</div>
+  </div>
+
+</div>
+
+<div class="sel-bar" id="sel-bar">Option selected — tell me in the terminal</div>
+
+<script>
+function pick(el) {
+  document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('sel-bar').classList.add('visible');
+
+  // Write selection event for the server to read
+  fetch('/select', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({choice: el.dataset.choice, text: el.querySelector('.option-title').textContent})
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>
